@@ -1,0 +1,32 @@
+SOLVER:
+  BATCH_SIZE: 32
+  MAX_EPOCH: 100
+  LR: 5e-5
+  SEED: 42
+
+DA:
+  TASK: True
+  USE: False
+
+PROTEIN:
+  # enable BiLSTM version
+  USE_BILSTM: True
+  LSTM_HIDDEN_DIM: 256 # BiLSTM layerdimension
+  LSTM_NUM_LAYERS: 2 # LSTM layer
+  LSTM_DROPOUT: 0.2 # Dropout 
+  EMBEDDING_DIM: 128    # Embedding dimension
+  FEATURE_DIM: 4 # amino acidfeaturedimensionhydrophobicityvolumechargepolarity
+  MAX_PROTEIN_LENGTH: 1200 # maxsequencelength BindingDB 89%
+  PADDING: True
+
+DECODER:
+  BINARY: 2
+
+RESULT:
+  OUTPUT_DIR: "./result/DrugBAN_BiLSTM_Non_DA"
+  SAVE_MODEL: True
+
+# Config below only when you use comet
+COMET:
+  PROJECT_NAME: "DrugBAN_BiLSTM"
+  TAG: "Non_DA"

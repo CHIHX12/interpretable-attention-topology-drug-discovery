@@ -1,0 +1,106 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# PyTorch model checkpoints
+result/
+*.pth
+*.pt
+*.ckpt
+
+# Large data files (download separately — see datasets/README.md)
+datasets/bindingdb/
+datasets/biosnap/
+datasets/human/
+datasets/pdbbind/
+datasets/cnnscore_database/
+datasets/GPCR_resarch/attention_results*/
+datasets/GPCR_resarch/consensus_results*/
+datasets/GPCR_resarch/backup_*/
+datasets/GPCR_resarch/GSHR_PDB/
+datasets/bindingdb_sample/
+
+# Generated PyMOL packages (large binary archives)
+*.tar.gz
+Class_Attention_PyMOL_Package_*/
+Consensus_PyMOL_Package_*/
+Three_Regions_PyMOL_Package_*/
+PyMOL_Package_*/
+PyMOL_Package_Fixed_*/
+GHSR_Active_PyMOL_*/
+GHSR_Inactive_PyMOL_*/
+
+# Generated analysis output directories
+attention_plots/
+attention_reports/
+aggregate_all_data/
+aggregate_analysis/
+aggregate_by_protein/
+Important_Analysis/
+P-L/
+pymol_scripts/
+
+# Result CSV/JSON (generated during experiments)
+all_experiments_results.csv
+all_results_summary.csv
+all_results_summary.json
+*.results.json
+FUNCTIONAL_PAIRS_SUMMARY.txt
+QUICK_FINDINGS_R283.txt
+VISUAL_COMPARISON.txt
+
+# Backup and development notes (not needed for reproducibility)
+*.bak
+backup_*/
+RUN_ALL_sh
+CORRECTION_STATUS.md
+FIXES_APPLIED.md
+QUICK_STATUS.md
+X_AXIS_PROBLEM.txt
+FILES_TO_REGENERATE.md
+TODAY_CREATION_SUMMARY.md
+testversion.txt
+version.md
+
+# Comet ML
+.comet.config
+
+# Log files
+*.log
+nohup.out
+
+# OS
+.DS_Store
+Thumbs.db
+
+# SELFIES vocabulary (auto-regenerated from training data)
+selfies_vocab.pkl
+
+# Temporary files
+*.tmp
+*.temp

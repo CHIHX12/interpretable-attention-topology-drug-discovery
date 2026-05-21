@@ -1,0 +1,43 @@
+SOLVER:
+  BATCH_SIZE: 128 # batch sizedata
+  MAX_EPOCH: 50 # epoch
+  LR: 1e-4 # uselearning rate
+  SEED: 42
+  NUM_WORKERS: 4 # dataload
+  PRETRAINED_MODEL: "./result/DrugBAN_BiLSTM/best_model_epoch_94.pth" # trainingmodelpath
+
+DA:
+  TASK: False
+  USE: False
+
+PROTEIN:
+  # enable BiLSTM trainingmodel
+  USE_BILSTM: True
+  LSTM_HIDDEN_DIM: 256 # BiLSTM layerdimension
+  LSTM_NUM_LAYERS: 2 # LSTM layer
+  LSTM_DROPOUT: 0.2 # Dropout 
+  EMBEDDING_DIM: 128       # Embedding dimension
+  FEATURE_DIM: 4 # amino acidfeaturedimension
+  MAX_PROTEIN_LENGTH: 1200 # maxsequencelength
+  PADDING: True
+
+DECODER:
+  BINARY: 1 # classification
+
+# multi-taskconfig (Multi-task Learning)
+MULTITASK:
+  ENABLED: True # enablemulti-task
+  ALPHA: 0.5               # classificationlossweight (classification loss weight)
+  BETA: 0.5                # regressionlossweight (regression loss weight)
+  # loss = ALPHA * classification_loss + BETA * regression_loss
+  # parameterclassificationregression
+  # ALPHA=0.7, BETA=0.3 classification
+
+RESULT:
+  OUTPUT_DIR: "./result/DrugBAN_BiLSTM_CNNScore_Multitask"
+  SAVE_MODEL: True
+
+# Config below only when you use comet
+COMET:
+  PROJECT_NAME: "DrugBAN_BiLSTM_CNNScore_Multitask"
+  TAG: "Transfer_Learning_ZINC20_Multitask"

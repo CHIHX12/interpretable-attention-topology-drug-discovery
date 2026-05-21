@@ -1,0 +1,39 @@
+SOLVER:
+  BATCH_SIZE: 64
+  MAX_EPOCH: 30             # Fine-tuning 不需要太多 epoch
+  LR: 5e-5                  # Fine-tuning 用較小的學習率
+  SEED: 42
+  NUM_WORKERS: 4
+  # PRETRAINED_MODEL 會由運行腳本動態設置
+  PRETRAINED_MODEL: "result/LORO/fold_10/best_model_epoch_19.pth"
+
+DA:
+  TASK: False
+  USE: False
+
+PROTEIN:
+  USE_BILSTM: True
+  LSTM_HIDDEN_DIM: 256
+  LSTM_NUM_LAYERS: 2
+  LSTM_DROPOUT: 0.2
+  EMBEDDING_DIM: 128
+  FEATURE_DIM: 4
+  MAX_PROTEIN_LENGTH: 1200
+  PADDING: True
+
+DECODER:
+  BINARY: 1                # 必須與原始 LORO 訓練一致
+
+# 多任務學習配置
+MULTITASK:
+  ENABLED: True
+  ALPHA: 0.5
+  BETA: 0.5
+
+RESULT:
+  OUTPUT_DIR: "./result/LORO_Transfer/fold_10"
+  SAVE_MODEL: True
+
+COMET:
+  PROJECT_NAME: "DrugBAN_LORO_Transfer"
+  TAG: "TransferLearning"

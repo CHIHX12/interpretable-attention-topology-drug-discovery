@@ -1,0 +1,46 @@
+SOLVER:
+  BATCH_SIZE: 32 # batch size data
+  MAX_EPOCH: 50 # fine-tuning epoch
+  LR: 1e-5 # learning ratefine-tuningtrainingweight
+  SEED: 42
+  # transfer learning BindingDB trainingmodel
+  PRETRAINED_MODEL: "result/DrugBAN_BiLSTM/best_model_epoch_94.pth"
+
+DA:
+  TASK: False
+  USE: False
+
+PROTEIN:
+  # enable BiLSTM trainingmodel
+  USE_BILSTM: True
+  LSTM_HIDDEN_DIM: 256 # trainingmodel
+  LSTM_NUM_LAYERS: 2 # trainingmodel
+  LSTM_DROPOUT: 0.2
+  EMBEDDING_DIM: 128 # trainingmodel
+  FEATURE_DIM: 4
+  MAX_PROTEIN_LENGTH: 1200 # trainingmodel
+  PADDING: True
+
+DRUG:
+  # use Graph (GCN) trainingmodel
+  USE_BILSTM: False # DrugBAN_BiLSTM use GCNdrug BiLSTM
+  NODE_IN_FEATS: 75
+  PADDING: True
+  HIDDEN_LAYERS: [128, 128, 128]
+  NODE_IN_EMBEDDING: 128
+  MAX_NODES: 290
+
+DECODER:
+  BINARY: 1 # trainingmodel
+
+BCN:
+  HEADS: 2 # trainingmodel
+
+RESULT:
+  OUTPUT_DIR: "./result/DrugBAN_BiLSTM_GHSR_TransferLearning"
+  SAVE_MODEL: True
+
+# Config below only when you use comet
+COMET:
+  PROJECT_NAME: "DrugBAN_BiLSTM_GHSR"
+  TAG: "TransferLearning_BindingDB_to_GHSR"

@@ -1,0 +1,39 @@
+SOLVER:
+  BATCH_SIZE: 32
+  MAX_EPOCH: 100
+  LR: 1e-4
+  DA_LR: 5e-5
+  SEED: 42
+
+DA:
+  TASK: True
+  USE: True
+  METHOD: "CDAN"
+  USE_ENTROPY: False
+  RANDOM_LAYER: True
+  ORIGINAL_RANDOM: True
+  RANDOM_DIM: 256
+  INIT_EPOCH: 10
+
+PROTEIN:
+  # enable BiLSTM version
+  USE_BILSTM: True
+  LSTM_HIDDEN_DIM: 256 # BiLSTM layerdimension
+  LSTM_NUM_LAYERS: 2 # LSTM layer
+  LSTM_DROPOUT: 0.2 # Dropout 
+  EMBEDDING_DIM: 128    # Embedding dimension
+  FEATURE_DIM: 4 # amino acidfeaturedimensionhydrophobicityvolumechargepolarity
+  MAX_PROTEIN_LENGTH: 1200 # maxsequencelength BindingDB 89%
+  PADDING: True
+
+DECODER:
+  BINARY: 2
+
+RESULT:
+  OUTPUT_DIR: "./result/DrugBAN_BiLSTM_DA"
+  SAVE_MODEL: True
+
+# Config below only when you use comet
+COMET:
+  PROJECT_NAME: "DrugBAN_BiLSTM_CDAN"
+  TAG: "DA"

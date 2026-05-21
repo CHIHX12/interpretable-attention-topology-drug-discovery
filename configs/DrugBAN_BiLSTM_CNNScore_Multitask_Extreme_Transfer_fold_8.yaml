@@ -1,0 +1,37 @@
+SOLVER:
+  BATCH_SIZE: 64
+  MAX_EPOCH: 30
+  LR: 5e-5
+  SEED: 42
+  NUM_WORKERS: 4
+  PRETRAINED_MODEL: "result/LORO_Extreme/fold_8/best_model_epoch_24.pth"
+
+DA:
+  TASK: False
+  USE: False
+
+PROTEIN:
+  USE_BILSTM: True
+  LSTM_HIDDEN_DIM: 256
+  LSTM_NUM_LAYERS: 2
+  LSTM_DROPOUT: 0.2
+  EMBEDDING_DIM: 128
+  FEATURE_DIM: 4
+  MAX_PROTEIN_LENGTH: 1200
+  PADDING: True
+
+DECODER:
+  BINARY: 1
+
+MULTITASK:
+  ENABLED: True
+  ALPHA: 0.5
+  BETA: 0.5
+
+RESULT:
+  OUTPUT_DIR: "./result/LORO_Extreme_Transfer"
+  SAVE_MODEL: True
+
+COMET:
+  PROJECT_NAME: "DrugBAN_LORO_Extreme_Transfer"
+  TAG: "Extreme_TransferLearning"

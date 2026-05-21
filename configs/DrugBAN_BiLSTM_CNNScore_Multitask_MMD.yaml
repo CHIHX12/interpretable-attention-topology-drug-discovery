@@ -1,0 +1,46 @@
+SOLVER:
+  BATCH_SIZE: 64            # DA 需要較小的 batch size 因為同時處理 source 和 target
+  MAX_EPOCH: 50
+  LR: 1e-4
+  DA_LR: 5e-5               # Domain Adaptation 學習率 (MMD 不使用，但保留配置一致性)
+  SEED: 42
+  NUM_WORKERS: 4
+  PRETRAINED_MODEL: "./result/DrugBAN_BiLSTM/best_model_epoch_94.pth"
+
+DA:
+  TASK: True                # 啟用 DA 數據格式
+  USE: True                 # 啟用 DA 損失
+  METHOD: "MMD"             # Maximum Mean Discrepancy
+  USE_ENTROPY: False
+  RANDOM_LAYER: False
+  ORIGINAL_RANDOM: False
+  RANDOM_DIM: 256
+  INIT_EPOCH: 5             # 前 5 個 epoch 不使用 DA
+  LAMB_DA: 0.5              # MMD loss weight (MMD 通常可以用較大的權重)
+
+PROTEIN:
+  USE_BILSTM: True
+  LSTM_HIDDEN_DIM: 256
+  LSTM_NUM_LAYERS: 2
+  LSTM_DROPOUT: 0.2
+  EMBEDDING_DIM: 128
+  FEATURE_DIM: 4
+  MAX_PROTEIN_LENGTH: 1200
+  PADDING: True
+
+DECODER:
+  BINARY: 2                 # 二分類 (DA 需要 BINARY=2)
+
+# 多任務學習配置
+MULTITASK:
+  ENABLED: True
+  ALPHA: 0.5                # 分類損失權重
+  BETA: 0.5                 # 回歸損失權重
+
+RESULT:
+  OUTPUT_DIR: "./result/DrugBAN_BiLSTM_CNNScore_Multitask_MMD"
+  SAVE_MODEL: True
+
+COMET:
+  PROJECT_NAME: "DrugBAN_BiLSTM_CNNScore_Multitask_MMD"
+  TAG: "LORO_DA_Transfer"
