@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-analysis Class 1 (active) vs Class 0 (active) attentiondifference
+Analyze attention differences: Class 1 (Active) vs Class 0 (Inactive)
 Analyze Attention Differences between Active and Inactive Compounds
 
 
@@ -32,10 +32,10 @@ from utils import set_seed, graph_collate_func, build_selfies_vocab
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Analyze attention differences between active and inactive compounds")
-    parser.add_argument('--config', type=str, default='configs/DrugBAN_BiLSTM_GHSR_TransferLearning.yaml',
+    parser.add_argument('--config', type=str, default='configs/DrugBAN_BiLSTM_GHSR_Reproduce.yaml',
                         help='Path to config file')
     parser.add_argument('--model_path', type=str,
-                        default='result/DrugBAN_BiLSTM_GHSR_Seed42/best_model_epoch_44.pth',
+                        default='models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth',
                         help='Path to trained model checkpoint')
     parser.add_argument('--data_file', type=str,
                         default='datasets/GPCR_resarch/GHSR_training_data.csv',
@@ -122,8 +122,8 @@ def extract_attention_by_class(model, dataloader, device, protein_len, use_drug_
                     class_1_attentions.append(att_i)
 
     print(f"✅ done！")
-    print(f" Class 0 (active): {len(class_0_attentions)} drug")
-    print(f" Class 1 (active): {len(class_1_attentions)} drug")
+    print(f" Class 0 (Inactive): {len(class_0_attentions)} drug")
+    print(f" Class 1 (Active): {len(class_1_attentions)} drug")
 
     return class_0_attentions, class_1_attentions
 
@@ -170,11 +170,11 @@ def analyze_and_visualize(class_0_att, class_1_att, protein_seq, output_dir):
     ax = axes[0]
     x = np.arange(protein_len)
 
-    ax.plot(x, class_0_mean, label='Class 0 (active)', color='blue', linewidth=1.5, alpha=0.7)
+    ax.plot(x, class_0_mean, label='Class 0 (Inactive)', color='blue', linewidth=1.5, alpha=0.7)
     ax.fill_between(x, class_0_mean - class_0_std, class_0_mean + class_0_std,
                      color='blue', alpha=0.2)
 
-    ax.plot(x, class_1_mean, label='Class 1 (active)', color='red', linewidth=1.5, alpha=0.7)
+    ax.plot(x, class_1_mean, label='Class 1 (Active)', color='red', linewidth=1.5, alpha=0.7)
     ax.fill_between(x, class_1_mean - class_1_std, class_1_mean + class_1_std,
                      color='red', alpha=0.2)
 
@@ -324,8 +324,8 @@ def analyze_and_visualize(class_0_att, class_1_att, protein_seq, output_dir):
         f.write("---\n\n")
 
         f.write("## 📊 \n\n")
-        f.write(f"- **Class 0 (active)**: {len(class_0_att)} \n")
-        f.write(f"- **Class 1 (active)**: {len(class_1_att)} \n")
+        f.write(f"- **Class 0 (Inactive)**: {len(class_0_att)} \n")
+        f.write(f"- **Class 1 (Active)**: {len(class_1_att)} \n")
         f.write(f"- **proteinlength**: {protein_len} amino acid\n")
         f.write(f"- **significantdifferenceresidue**: {len(significant_indices)} (p < 0.05)\n\n")
 
@@ -399,8 +399,8 @@ def main():
     df = pd.read_csv(args.data_file)
 
     print(f" : {len(df)}")
-    print(f" Class 0 (active): {len(df[df['Y']==0])}")
-    print(f"   Class 1 (active): {len(df[df['Y']==1])}")
+    print(f" Class 0 (Inactive): {len(df[df['Y']==0])}")
+    print(f"   Class 1 (Active): {len(df[df['Y']==1])}")
 
     # protein sequence
     protein_seq = df['Protein'].iloc[0]

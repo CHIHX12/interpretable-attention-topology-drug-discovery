@@ -1,9 +1,13 @@
 """
-Train GHSR model and save checkpoint at EVERY epoch.
-Goal: find the epoch where batch_predict AUROC ≈ 0.817 (Dec 24 state).
+Train GHSR model and save a checkpoint at EVERY epoch.
+
+Purpose: checkpoint-level inspection — allows comparing attention patterns
+and AUROC across epochs to identify the best model without relying solely
+on the final epoch. Complements the main trainer which saves only the
+best-val checkpoint and the last epoch.
 
 Usage:
-  python train_save_all_epochs.py --max_epoch 15 --output_dir result/DrugBAN_BiLSTM_GHSR_EarlyCkpt
+  python train_save_all_epochs.py --max_epoch 50 --output_dir result/DrugBAN_BiLSTM_GHSR_EarlyCkpt
 """
 import torch
 import torch.nn as nn

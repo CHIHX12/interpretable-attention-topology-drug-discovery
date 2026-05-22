@@ -31,10 +31,10 @@ from utils import set_seed, graph_collate_func, build_selfies_vocab
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Analyze attention differences with PDB numbering")
-    parser.add_argument('--config', type=str, default='configs/DrugBAN_BiLSTM_GHSR_TransferLearning.yaml',
+    parser.add_argument('--config', type=str, default='configs/DrugBAN_BiLSTM_GHSR_Reproduce.yaml',
                         help='Path to config file')
     parser.add_argument('--model_path', type=str,
-                        default='result/DrugBAN_BiLSTM_GHSR_Seed42/best_model_epoch_44.pth',
+                        default='models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth',
                         help='Path to trained model checkpoint')
     parser.add_argument('--data_file', type=str,
                         default='datasets/GPCR_resarch/GHSR_training_data.csv',
