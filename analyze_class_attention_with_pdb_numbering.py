@@ -110,11 +110,11 @@ def extract_attention_by_class(model, dataloader, device, protein_len, use_drug_
             if att.dim() == 4:
                 # Average over attention heads → [batch, drug_atoms, protein_len]
                 att_heads_avg = att.mean(dim=1)
-                # Max over drug atoms → [batch, protein_len]
-                att_protein = att_heads_avg.max(dim=1)[0]
+                # Mean over drug atoms → [batch, protein_len]  (preserves E124/S125 signal)
+                att_protein = att_heads_avg.mean(dim=1)
             elif att.dim() == 3:
-                # Max over drug atoms → [batch, protein_len]
-                att_protein = att.max(dim=1)[0]
+                # Mean over drug atoms → [batch, protein_len]
+                att_protein = att.mean(dim=1)
             else:
                 # Already [batch, protein_len]
                 att_protein = att

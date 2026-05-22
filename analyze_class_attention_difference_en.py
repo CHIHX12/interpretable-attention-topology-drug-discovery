@@ -101,11 +101,12 @@ def extract_attention_by_class(model, dataloader, device, protein_len, use_drug_
             batch_size = score.size(0)
 
             # Aggregate attention: [batch, heads, drug_len, protein_len] -> [batch, protein_len]
+            # mean over heads, then mean over drug atoms (preserves E124/S125 signal)
             if len(att.shape) == 4:
-                att_avg_heads = att.mean(dim=1)  # [batch, drug_len, protein_len]
-                att_protein = att_avg_heads.max(dim=1)[0]  # [batch, protein_len]
+                att_avg_heads = att.mean(dim=1)      # [batch, drug_len, protein_len]
+                att_protein = att_avg_heads.mean(dim=1)  # [batch, protein_len]
             elif len(att.shape) == 3:
-                att_protein = att.max(dim=1)[0]
+                att_protein = att.mean(dim=1)
             else:
                 att_protein = att
 
