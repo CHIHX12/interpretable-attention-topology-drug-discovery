@@ -244,6 +244,7 @@ SOLVER:
 | Script | Purpose |
 |--------|---------|
 | `batch_predict_ghsr.py` | **Primary inference script** — runs all 1,539 GHSR pairs, extracts attention, saves `.npz` |
+| `consensus_analysis_ghsr.py` | Consensus residues — finds positions with high attention frequency across all drugs (class-agnostic); generates PyMOL `.pml` with PDB numbering |
 | `analyze_class_attention_difference_en.py` | Class-differential attention: active vs inactive (Welch's t-test per residue) |
 | `analyze_class_attention_difference.py` | Same as above (Chinese-annotated version) |
 | `analyze_class_attention_with_pdb_numbering.py` | Class-differential analysis with PDB residue numbering (dataset_pos + 2 = PDB number) |
@@ -322,6 +323,7 @@ DrugBAN-BiLSTM/
 │       └── GHSR_training_data.csv
 │
 ├── batch_predict_ghsr.py              # Primary inference + attention extraction
+├── consensus_analysis_ghsr.py        # Consensus residue analysis + PyMOL script generation
 ├── train_save_all_epochs.py           # Save checkpoint every epoch (for selection)
 ├── analyze_class_attention_difference_en.py  # Class-differential residue analysis (EN)
 ├── analyze_class_attention_difference.py     # Class-differential residue analysis (ZH)
