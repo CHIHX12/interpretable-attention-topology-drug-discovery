@@ -128,76 +128,74 @@ python split_ghsr_data.py --input datasets/GPCR_resarch/GHSR_training_data.csv \
 
 ## Reproducing Results
 
-### Step 1: Pre-train on BindingDB (binary binding)
+### One-command reproduce (recommended)
+
+All model weights and data are included in the repository.
+
+```bash
+# Clone and set up environment
+git clone https://github.com/CHIHX12/interpretable-attention-topology-drug-discovery.git
+cd interpretable-attention-topology-drug-discovery
+conda env create -f environment.yml
+conda activate drugban
+
+# Run the full analysis pipeline (~1 min on GPU)
+bash reproduce.sh
+```
+
+This runs batch prediction on the provided fine-tuned model, extracts attention weights, performs class-differential analysis (active vs. inactive residues), and generates consensus residue outputs including a PyMOL `.pml` script.
+
+To re-run fine-tuning from scratch (~30 min on GPU):
+
+```bash
+bash reproduce.sh --retrain
+```
+
+### Provided model weights
+
+| File | Description | AUROC |
+|------|-------------|-------|
+| `models/pretrained/DrugBAN_BiLSTM_BindingDB_epoch94.pth` | Pre-trained on BindingDB (binary binding) | — |
+| `models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth` | Fine-tuned on GHSR (best epoch) | **0.9621** |
+
+### Step-by-step (manual)
+
+**Step 1 — Fine-tune** (skip if using provided model):
 
 ```bash
 python main.py \
-    --cfg configs/DrugBAN_BiLSTM.yaml \
-    --data bindingdb \
-    --split random
-```
-
-This saves the best checkpoint to `result/DrugBAN_BiLSTM/best_model_epoch_XX.pth`.
-
-### Step 2: Transfer Learning to GPCR (3-class, multi-task)
-
-Edit `configs/DrugBAN_BiLSTM_CNNScore_Multitask_3Class.yaml` to set the pretrained model path:
-
-```yaml
-SOLVER:
-  PRETRAINED_MODEL: "./result/DrugBAN_BiLSTM/best_model_epoch_94.pth"
-```
-
-Then run fine-tuning:
-
-```bash
-python main.py \
-    --cfg configs/DrugBAN_BiLSTM_CNNScore_Multitask_3Class.yaml \
+    --cfg configs/DrugBAN_BiLSTM_GHSR_Reproduce.yaml \
     --data GPCR_resarch \
     --split random
 ```
 
-Or use the provided script:
+**Step 2 — Batch prediction + attention extraction**:
 
 ```bash
-bash run_ghsr_transfer_learning.sh
+python batch_predict_ghsr.py \
+    --config configs/DrugBAN_BiLSTM_GHSR_Reproduce.yaml \
+    --data_file datasets/GPCR_resarch/GHSR_training_data.csv \
+    --model_path models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth \
+    --output_dir datasets/GPCR_resarch/attention_results_reproduce
 ```
 
-### Step 3: Leave-One-Receptor-Out (LORO) Validation
+**Step 3 — Class-differential analysis** (active vs. inactive residues):
 
 ```bash
-# Create LORO folds (one fold per receptor)
-python scripts/create_loro_splits.py
-
-# Train all folds
-bash run_loro_transfer_learning.sh
-
-# Evaluate LORO results
-python scripts/evaluate_loro_results.py
-```
-
-### Step 4: Extract Attention Weights
-
-```bash
-python scripts/extract_attention_weights.py \
-    --cfg configs/DrugBAN_BiLSTM_CNNScore_Multitask_3Class.yaml \
-    --model_path result/LORO_3Class/best_model.pth \
-    --data datasets/GPCR_resarch/random/test.csv \
-    --output_dir datasets/GPCR_resarch/attention_results
-```
-
-### Step 5: Identify Key Residues (Class-Differential Analysis)
-
-```bash
-# Identify residues preferentially activated vs inhibited
 python analyze_class_attention_difference_en.py \
-    --attention_dir datasets/GPCR_resarch/attention_results \
-    --output_dir datasets/GPCR_resarch/consensus_results
+    --config configs/DrugBAN_BiLSTM_GHSR_Reproduce.yaml \
+    --model_path models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth \
+    --data_file datasets/GPCR_resarch/GHSR_training_data.csv \
+    --output_dir result/class_diff_reproduce
+```
 
-# Generate PyMOL visualization scripts
-python scripts/plot_class_differential_attention.py \
-    --consensus_dir datasets/GPCR_resarch/consensus_results \
-    --output_dir pymol_output
+**Step 4 — Consensus residue analysis**:
+
+```bash
+python consensus_analysis_ghsr.py \
+    --attention_file datasets/GPCR_resarch/attention_results_reproduce/GHSR_attention_scores.npz \
+    --output_dir datasets/GPCR_resarch/consensus_results_reproduce \
+    --protein_length 523
 ```
 
 ---
@@ -297,6 +295,12 @@ See `PYMOL_VISUALIZATION_GUIDE.md` for detailed instructions.
 
 ```
 DrugBAN-BiLSTM/
+├── reproduce.sh               # One-command reproducibility script
+├── models/
+│   ├── pretrained/
+│   │   └── DrugBAN_BiLSTM_BindingDB_epoch94.pth  # Pre-trained on BindingDB
+│   └── finetuned/
+│       └── DrugBAN_BiLSTM_GHSR_epoch36.pth        # Fine-tuned on GHSR (AUROC=0.9621)
 ├── main.py                    # Training entry point
 ├── models.py                  # Model definitions (DrugBAN, BiLSTM encoders)
 ├── ban.py                     # Bilinear Attention Network layer
@@ -317,10 +321,11 @@ DrugBAN-BiLSTM/
 │   ├── evaluate_loro_results.py
 │   └── statistical_tests.py
 │
-├── datasets/                  # Data directory (not tracked by git)
-│   ├── bindingdb/             # Pre-training data
-│   └── GPCR_resarch/          # GPCR fine-tuning data
-│       └── GHSR_training_data.csv
+├── datasets/
+│   ├── bindingdb/             # Pre-training data (large — see datasets/README.md)
+│   └── GPCR_resarch/          # GPCR fine-tuning data (included in repo)
+│       ├── GHSR_training_data.csv   # Full 1,539 drug-protein pairs
+│       └── random/                  # Train / val / test splits (seed=42)
 │
 ├── batch_predict_ghsr.py              # Primary inference + attention extraction
 ├── consensus_analysis_ghsr.py        # Consensus residue analysis + PyMOL script generation

@@ -27,11 +27,17 @@ env/
 venv/
 ENV/
 
-# PyTorch model checkpoints
+# PyTorch model checkpoints (training outputs — not tracked)
 result/
 *.pth
 *.pt
 *.ckpt
+# Exception: curated model weights committed for reproducibility
+!models/
+!models/pretrained/
+!models/pretrained/*.pth
+!models/finetuned/
+!models/finetuned/*.pth
 
 # Large data files (download separately — see datasets/README.md)
 datasets/bindingdb/
