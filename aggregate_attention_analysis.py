@@ -116,8 +116,11 @@ def analyze_all_samples(model, cfg, data_loader, df, device, std_mult=1.0):
 
     with torch.no_grad():
         for batch_idx, batch in enumerate(tqdm(data_loader)):
-            # datav_d, v_p, labels
-            v_d, v_p, labels = batch
+            # dataloader returns 4 values (v_d, v_p, labels, z) when features enabled
+            if len(batch) == 4:
+                v_d, v_p, labels, _ = batch
+            else:
+                v_d, v_p, labels = batch
 
             # attention
             att_vec, score, mean_att, std_att = collect_attention(model, v_d, v_p, labels, device)

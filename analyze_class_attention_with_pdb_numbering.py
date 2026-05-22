@@ -46,6 +46,8 @@ def parse_args():
                         help='Batch size')
     parser.add_argument('--device', type=str, default='cuda',
                         help='Device (cuda or cpu)')
+    parser.add_argument('--no_protein_features', action='store_true',
+                        help='Disable protein physicochemical features (for diagnostic/reproducibility)')
     return parser.parse_args()
 
 
@@ -83,9 +85,9 @@ def extract_attention_by_class(model, dataloader, device, protein_len, use_drug_
 
     with torch.no_grad():
         for batch_idx, batch_data in enumerate(tqdm(dataloader, desc="Processing batches")):
-            # Unpack
-            if use_drug_bilstm:
-                v_d, v_p, label = batch_data
+            # dataloader returns 4 values (v_d, v_p, label, z) when features enabled
+            if len(batch_data) == 4:
+                v_d, v_p, label, _ = batch_data
             else:
                 v_d, v_p, label = batch_data
 
@@ -100,44 +102,34 @@ def extract_attention_by_class(model, dataloader, device, protein_len, use_drug_
             # Debug: Print attention shape for first batch
             if batch_idx == 0:
                 print(f"\nDEBUG: Attention tensor shape: {att.shape}")
-                print(f"DEBUG: Expected shape: (batch_size, {protein_len})")
 
-            # att shape should be: (batch_size, protein_len)
-            # But might be (batch_size, protein_len, 1) or other shapes
-            att_np = att.cpu().numpy()
+            # Aggregate BAN attention to per-residue protein attention
+            # att shape: [batch, heads, drug_atoms, protein_len] (4D)
+            #         or [batch, drug_atoms, protein_len] (3D)
+            #         or [batch, protein_len] (2D)
+            if att.dim() == 4:
+                # Average over attention heads → [batch, drug_atoms, protein_len]
+                att_heads_avg = att.mean(dim=1)
+                # Max over drug atoms → [batch, protein_len]
+                att_protein = att_heads_avg.max(dim=1)[0]
+            elif att.dim() == 3:
+                # Max over drug atoms → [batch, protein_len]
+                att_protein = att.max(dim=1)[0]
+            else:
+                # Already [batch, protein_len]
+                att_protein = att
 
-            # Ensure proper shape: squeeze out extra dimensions
-            if att_np.ndim > 2:
-                # If shape is (batch, protein_len, 1) or similar, squeeze
-                att_np = att_np.squeeze()
-                if batch_idx == 0:
-                    print(f"DEBUG: After squeeze: {att_np.shape}")
-
-            # Now should be (batch_size, protein_len)
-            if att_np.ndim == 1:
-                # Single sample batch
-                att_np = att_np.reshape(1, -1)
+            # Slice to actual protein length (discard padding)
+            att_np = att_protein[:, :protein_len].cpu().numpy()  # [batch, protein_len]
 
             label_np = label.cpu().numpy()
 
             # Group by class
             for i in range(len(label_np)):
-                att_i = att_np[i]
+                att_i = att_np[i]  # [protein_len]
 
-                # Ensure it's 1D and has correct length
-                if att_i.ndim > 1:
-                    att_i = att_i.flatten()
-
-                # Only keep if it has the right length
                 if len(att_i) != protein_len:
-                    if batch_idx == 0 and i == 0:
-                        print(f"DEBUG: Sample attention length: {len(att_i)}, expected: {protein_len}")
-                        print(f"DEBUG: Will try to reshape/slice to correct length")
-                    # Try to extract the correct portion
-                    if len(att_i) > protein_len:
-                        att_i = att_i[:protein_len]
-                    else:
-                        continue  # Skip if too short
+                    continue  # Skip malformed samples
 
                 label_i = label_np[i]
 
@@ -208,7 +200,7 @@ def analyze_and_visualize(class_0_attentions, class_1_attentions, protein_len,
     p_values = np.zeros(protein_len)
     for i in range(protein_len):
         try:
-            result = stats.ttest_ind(class_1_matrix[:, i], class_0_matrix[:, i])
+            result = stats.ttest_ind(class_1_matrix[:, i], class_0_matrix[:, i], equal_var=False)
             # Handle both old and new scipy versions
             if hasattr(result, 'pvalue'):
                 p_values[i] = result.pvalue
@@ -515,8 +507,13 @@ def main():
     # Load model
     model, cfg = load_model(args.config, args.model_path, device)
 
-    # Check if using DrugBiLSTM
-    use_drug_bilstm = hasattr(cfg, 'DRUG_ENCODING') and cfg.DRUG_ENCODING.get('USE_DRUG_BILSTM', False)
+    # Check encoder types from config
+    use_drug_bilstm = cfg.DRUG.get("USE_BILSTM", False)
+    use_protein_features = cfg.PROTEIN.get("USE_BILSTM", False)
+    # Allow override via --no_protein_features flag
+    if getattr(args, 'no_protein_features', False):
+        use_protein_features = False
+        print("   [OVERRIDE] use_protein_features = False")
 
     # Load data
     print(f"\nLoading data: {args.data_file}")
@@ -531,11 +528,29 @@ def main():
     print(f"   Protein length: {protein_len} amino acids")
 
     # Create dataset
+    selfies_vocab = None
     if use_drug_bilstm:
-        # Build SELFIES vocab
-        build_selfies_vocab(df['SELFIES'].tolist())
+        # Load SELFIES vocab from model directory, or build from data
+        import pickle, os
+        model_dir = os.path.dirname(args.model_path)
+        vocab_path = os.path.join(model_dir, 'selfies_vocab.pkl')
+        if os.path.exists(vocab_path):
+            print(f"   Loading SELFIES vocab from {vocab_path}")
+            with open(vocab_path, 'rb') as f:
+                selfies_vocab = pickle.load(f)
+        else:
+            print("   Building SELFIES vocab from data...")
+            selfies_vocab = build_selfies_vocab(df['SMILES'].tolist())
 
-    dataset = DTIDataset(df.index.values, df)
+    dataset = DTIDataset(
+        df.index.values,
+        df,
+        use_features=use_protein_features,
+        use_selfies=use_drug_bilstm,
+        selfies_vocab=selfies_vocab,
+        max_drug_nodes=290,
+        max_protein_length=cfg.PROTEIN.get("MAX_PROTEIN_LENGTH", 1200)
+    )
 
     if use_drug_bilstm:
         dataloader = DataLoader(dataset, batch_size=args.batch_size,

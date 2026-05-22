@@ -84,9 +84,9 @@ def extract_attention_by_class(model, dataloader, device, protein_len, use_drug_
 
     with torch.no_grad():
         for batch_data in tqdm(dataloader, desc="Processing batches"):
-            # Unpack
-            if use_drug_bilstm:
-                v_d, v_p, label = batch_data
+            # dataloader returns 4 values (v_d, v_p, label, z) when features enabled
+            if len(batch_data) == 4:
+                v_d, v_p, label, _ = batch_data
             else:
                 v_d, v_p, label = batch_data
 
@@ -410,6 +410,7 @@ def main():
     # createdata
     use_drug_bilstm = cfg.DRUG.get("USE_BILSTM", False)
     use_drug_features = cfg.DRUG.get("USE_FEATURES", False)
+    use_protein_features = cfg.PROTEIN.get("USE_BILSTM", False)
     max_drug_length = cfg.DRUG.get("MAX_DRUG_LENGTH", 200)
 
     selfies_vocab = None
@@ -422,6 +423,7 @@ def main():
     dataset = DTIDataset(
         df.index.values,
         df,
+        use_features=use_protein_features,
         use_selfies=use_drug_bilstm,
         selfies_vocab=selfies_vocab,
         max_drug_length=max_drug_length,

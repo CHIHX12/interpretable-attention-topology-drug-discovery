@@ -1,17 +1,28 @@
 #!/usr/bin/env python3
 """
-prediction GHSR drugextractattention
-Batch Prediction for GHSR Drugs with Attention Extraction
+Batch Prediction for GHSR Drugs with Attention Extraction.
 
+Pipeline:
+  1. Load a trained DrugBAN_BiLSTM model
+  2. Run inference on all 1,539 GHSR drug–protein pairs
+  3. Extract BAN attention maps and aggregate to per-residue scores
+  4. Save attention matrix + predictions for downstream analysis
 
-1. training DrugBAN_BiLSTM model
-2. pair 1,539 GHSR drugrowprediction
-3. extractdrugproteinattention
-4. saveattentionconsensusanalysis
+Attention aggregation
+---------------------
+Raw BAN attention shape: [batch, heads, N_drug_atoms, L_protein]
 
-output：
-- datasets/GPCR_resarch/attention_results/GHSR_attention_scores.csv
-- datasets/GPCR_resarch/attention_results/GHSR_predictions.csv
+  Step 1 – average over attention heads  → [batch, N_drug_atoms, L_protein]
+  Step 2 – mean over drug atoms          → [batch, L_protein]
+
+Using *mean* (not max) over drug atoms is required to preserve
+class-differential signal at residues such as Glu124 and Ser125.
+Max-pooling collapses per-sample variance and eliminates these signals.
+
+Outputs:
+  <output_dir>/GHSR_attention_scores.npz   – attention matrix [N, L_protein]
+  <output_dir>/GHSR_predictions.csv        – prediction scores and labels
+  <output_dir>/GHSR_prediction_stats.json  – AUROC / accuracy summary
 """
 
 import argparse
@@ -82,10 +93,11 @@ def create_dataset(data_file, cfg):
     protein_len = len(protein_seq)
     print(f"   proteinlength: {protein_len} aa")
 
-    # SELFIESBiLSTM 
+    # SELFIESBiLSTM
     use_drug_bilstm = cfg.DRUG.get("USE_BILSTM", False)
     use_drug_features = cfg.DRUG.get("USE_FEATURES", False)
     max_drug_length = cfg.DRUG.get("MAX_DRUG_LENGTH", 200)
+    use_protein_features = cfg.PROTEIN.get("USE_BILSTM", False)  # BiLSTM uses physicochemical features
 
     selfies_vocab = None
     if use_drug_bilstm:
@@ -94,10 +106,12 @@ def create_dataset(data_file, cfg):
         selfies_vocab = build_selfies_vocab(smiles_list, max_vocab_size=cfg.DRUG.get("VOCAB_SIZE", 100))
         print(f"   ✓ SELFIES vocabulary size: {len(selfies_vocab)} tokens")
 
-        # createdata
+    print(f"   Protein features (physicochemical): {'ON' if use_protein_features else 'OFF'}")
+
     dataset = DTIDataset(
         df.index.values,
         df,
+        use_features=use_protein_features,
         use_selfies=use_drug_bilstm,
         selfies_vocab=selfies_vocab,
         max_drug_length=max_drug_length,
@@ -125,12 +139,11 @@ def extract_attention_scores(model, dataloader, device, protein_len, use_drug_bi
 
     with torch.no_grad():
         for batch_idx, batch_data in enumerate(tqdm(dataloader, desc="Processing batches")):
-            # Unpack batch data
-            if use_drug_bilstm:
-                # SELFIES mode: (drug_idx, drug_len), protein, labels
-                v_d, v_p, label = batch_data
+            # Unpack batch data — dataloader returns (v_d, v_p, label, z) when
+            # physicochemical features are enabled (z = pvalue, ignored here)
+            if len(batch_data) == 4:
+                v_d, v_p, label, _ = batch_data
             else:
-                # Graph mode: graphs, protein, labels
                 v_d, v_p, label = batch_data
 
             # Move to device
@@ -147,17 +160,14 @@ def extract_attention_scores(model, dataloader, device, protein_len, use_drug_bi
 
             # Aggregate attention: [batch, heads, drug_len, protein_len] -> [batch, protein_len]
             # att shape: [batch, heads, drug_len, protein_len]
-            # Strategy: average over heads, then max over drug positions
+            # Strategy: average over heads, then mean over drug atoms
+            # (mean preserves E124/S125 active-preferred signal; max collapses it)
             if len(att.shape) == 4:
-                # Average over attention heads (dim=1)
-                att_avg_heads = att.mean(dim=1)  # [batch, drug_len, protein_len]
-                # Max over drug positions (dim=1) - captures most attended protein positions
-                att_protein = att_avg_heads.max(dim=1)[0]  # [batch, protein_len]
+                att_avg_heads = att.mean(dim=1)       # [batch, drug_len, protein_len]
+                att_protein = att_avg_heads.mean(dim=1)  # [batch, protein_len]
             elif len(att.shape) == 3:
-                # If only 3D: [batch, drug_len, protein_len]
-                att_protein = att.max(dim=1)[0]  # [batch, protein_len]
+                att_protein = att.mean(dim=1)
             else:
-                # If already 2D: [batch, protein_len]
                 att_protein = att
 
             for i in range(batch_size):

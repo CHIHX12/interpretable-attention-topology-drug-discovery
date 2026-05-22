@@ -371,7 +371,7 @@ class ProteinBiLSTM(nn.Module):
 
         # Actual sequence length (non-padding)
         if v_len is not None:
-            lengths = v_len.squeeze().cpu()  # Ensure 1D tensor [batch]
+            lengths = v_len.reshape(-1).cpu()  # Ensure 1D tensor [batch], safe with batch_size=1
         else:
             mask = (v != 0).long()
             lengths = mask.sum(dim=1).cpu()  # [batch]

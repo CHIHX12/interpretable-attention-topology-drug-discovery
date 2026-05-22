@@ -243,13 +243,32 @@ SOLVER:
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/extract_attention_weights.py` | Extract BAN attention for all drug-protein pairs |
-| `analyze_class_attention_difference_en.py` | Class-differential attention: active vs inactive |
+| `batch_predict_ghsr.py` | **Primary inference script** — runs all 1,539 GHSR pairs, extracts attention, saves `.npz` |
+| `analyze_class_attention_difference_en.py` | Class-differential attention: active vs inactive (Welch's t-test per residue) |
+| `analyze_class_attention_difference.py` | Same as above (Chinese-annotated version) |
+| `analyze_class_attention_with_pdb_numbering.py` | Class-differential analysis with PDB residue numbering (dataset_pos + 2 = PDB number) |
 | `analyze_constitutive_variable_residues.py` | Identify constitutive vs variable residues |
 | `aggregate_attention_analysis.py` | Aggregate attention across multiple drugs per protein |
+| `aggregate_attention_by_protein.py` | Per-protein attention aggregation |
+| `train_save_all_epochs.py` | Train and save a checkpoint at **every** epoch (for checkpoint selection) |
+| `scripts/extract_attention_weights.py` | Extract BAN attention for all drug-protein pairs |
 | `scripts/plot_class_differential_attention.py` | Plot attention heatmaps |
 | `scripts/statistical_tests.py` | Statistical significance testing |
 | `scripts/evaluate_loro_results.py` | LORO cross-validation performance report |
+
+### Attention Aggregation Definition
+
+BAN produces raw attention logits of shape `[batch, heads, N_drug_atoms, L_protein]`.  
+All scripts use the following two-step aggregation:
+
+```
+Step 1: mean over attention heads  →  [batch, N_drug_atoms, L_protein]
+Step 2: mean over drug atoms       →  [batch, L_protein]
+```
+
+> **Why mean, not max?**  
+> Max-pooling over drug atoms selects only the single most-attended atom per protein position. Across samples this collapses per-sample variance and eliminates class-differential signals — empirically, `max` reduces Glu124's unique attention values from ~1,500 to 2 and its std from 0.37 to ~0.  
+> `mean` retains the full distribution and recovers the active-preferred signal at Glu124 (E124) and Ser125 (S125) consistently across all trained models.
 
 ---
 
@@ -302,9 +321,14 @@ DrugBAN-BiLSTM/
 │   └── GPCR_resarch/          # GPCR fine-tuning data
 │       └── GHSR_training_data.csv
 │
-├── analyze_class_attention_difference_en.py  # Key residue analysis
+├── batch_predict_ghsr.py              # Primary inference + attention extraction
+├── train_save_all_epochs.py           # Save checkpoint every epoch (for selection)
+├── analyze_class_attention_difference_en.py  # Class-differential residue analysis (EN)
+├── analyze_class_attention_difference.py     # Class-differential residue analysis (ZH)
+├── analyze_class_attention_with_pdb_numbering.py  # Same, with PDB numbering
 ├── analyze_constitutive_variable_residues.py
 ├── aggregate_attention_analysis.py
+├── aggregate_attention_by_protein.py
 │
 ├── run_ghsr_transfer_learning.sh   # Transfer learning pipeline
 ├── run_loro_transfer_learning.sh   # LORO validation pipeline
@@ -320,10 +344,12 @@ DrugBAN-BiLSTM/
 
 The attention mechanism in BAN provides direct biological interpretability:
 
-1. **Training**: The model learns which protein residues are attended when drugs bind with high vs. low affinity
-2. **Aggregation**: Attention weights are averaged across all drug-protein pairs in each activity class
-3. **Differential analysis**: Residues showing high attention in active pairs but low in inactive pairs (or vice versa) are candidates for class-specific roles
-4. **Constitutive residues**: Residues with uniformly high attention across all classes form the core binding scaffold
+1. **Training**: The model learns which protein residues are attended when drugs bind with high vs. low affinity.
+2. **Per-sample aggregation**: For each drug–protein pair, the raw BAN attention `[heads, N_atoms, L_protein]` is reduced to a per-residue vector `[L_protein]` by (i) averaging over heads, then (ii) averaging over drug atoms. See [Attention Aggregation Definition](#attention-aggregation-definition) for the rationale.
+3. **Class-level comparison**: Residue attention vectors are grouped by activity class (active / inactive) and compared with Welch's t-test. Residues with significantly higher attention in active pairs are candidates for activation roles.
+4. **Constitutive residues**: Residues with uniformly high attention across all classes form the core binding scaffold.
+
+> **PDB numbering**: The protein sequence in the dataset starts at position 0. PDB residue number = dataset position + 2 (e.g., dataset index 122 → PDB Glu124).
 
 This approach has recovered known binding site residues in GPCR structures with up to 33% precision using only sequence information.
 

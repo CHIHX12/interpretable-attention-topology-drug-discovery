@@ -1,0 +1,49 @@
+SOLVER:
+  BATCH_SIZE: 32
+  MAX_EPOCH: 50
+  LR: 1e-5
+  SEED: 42
+  # Transfer learning: DrugBiLSTM (SELFIES) + ProteinBiLSTM pretrained on BindingDB
+  PRETRAINED_MODEL: "result/DrugBAN_DrugBiLSTM_BothFeatures/best_model_epoch_90.pth"
+
+DA:
+  TASK: False
+  USE: False
+
+DRUG:
+  # Drug BiLSTM encoder (SELFIES representation)
+  USE_BILSTM: True
+  VOCAB_SIZE: 100  # Will be updated from selfies_vocab.pkl
+  LSTM_HIDDEN_DIM: 64
+  LSTM_NUM_LAYERS: 2
+  LSTM_DROPOUT: 0.2
+  NODE_IN_EMBEDDING: 128
+  HIDDEN_LAYERS: [128, 128, 128]
+  MAX_DRUG_LENGTH: 200
+  PADDING: True
+  USE_FEATURES: True
+  FEATURE_DIM: 8  # MW, logP, TPSA, HBD, HBA, Ring, RotBonds, Charge
+
+PROTEIN:
+  USE_BILSTM: True
+  LSTM_HIDDEN_DIM: 256
+  LSTM_NUM_LAYERS: 2
+  LSTM_DROPOUT: 0.2
+  EMBEDDING_DIM: 128
+  FEATURE_DIM: 4
+  MAX_PROTEIN_LENGTH: 1200
+  PADDING: True
+
+DECODER:
+  BINARY: 1
+
+BCN:
+  HEADS: 2
+
+RESULT:
+  OUTPUT_DIR: "./result/DrugBAN_DrugBiLSTM_BothFeatures_GHSR_TransferLearning"
+  SAVE_MODEL: True
+
+COMET:
+  PROJECT_NAME: "DrugBAN_DrugBiLSTM_GHSR"
+  TAG: "TransferLearning_DrugBiLSTM_BindingDB_to_GHSR"

@@ -114,8 +114,11 @@ def analyze_all_and_group_by_protein(model, data_loader, df, device, std_mult=1.
 
     with torch.no_grad():
         for batch_idx, batch in enumerate(tqdm(data_loader, desc="Processing samples")):
-            # data
-            v_d, v_p, labels = batch
+            # dataloader returns 4 values (v_d, v_p, labels, z) when features enabled
+            if len(batch) == 4:
+                v_d, v_p, labels, _ = batch
+            else:
+                v_d, v_p, labels = batch
 
             # attention
             att_vec, score, mean_att, std_att = collect_attention(model, v_d, v_p, labels, device)
