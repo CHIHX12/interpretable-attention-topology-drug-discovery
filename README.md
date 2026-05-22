@@ -153,10 +153,12 @@ bash reproduce.sh --retrain
 
 ### Provided model weights
 
-| File | Description | AUROC |
-|------|-------------|-------|
-| `models/pretrained/DrugBAN_BiLSTM_BindingDB_epoch94.pth` | Pre-trained on BindingDB (binary binding) | — |
-| `models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth` | Fine-tuned on GHSR (best epoch) | **0.9621** |
+| File | Description | Val AUROC |
+|------|-------------|-----------|
+| `models/pretrained/DrugBAN_BiLSTM_BindingDB_epoch94.pth` | Pre-trained on BindingDB (binary binding, 50 epochs, best val) | — |
+| `models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth` | Fine-tuned on GHSR — best epoch out of 50 total | **0.9621** |
+
+> **Training strategy**: the trainer runs for the full `MAX_EPOCH` (50) and saves the epoch with the best validation metric (val loss for multitask, AUROC for single-task). There is no early stopping — overfitting is prevented by selecting the best checkpoint rather than stopping training early.
 
 ### Step-by-step (manual)
 

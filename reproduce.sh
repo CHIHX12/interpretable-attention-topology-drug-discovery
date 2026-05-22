@@ -9,6 +9,12 @@
 #   bash reproduce.sh          # use provided fine-tuned model (fast, ~1 min)
 #   bash reproduce.sh --retrain  # re-run fine-tuning from pretrained weights (~30 min on GPU)
 #
+# Training strategy (--retrain):
+#   - Runs for MAX_EPOCH=50 epochs (no early stopping)
+#   - Tracks best checkpoint by validation loss (multitask) or AUROC (single-task)
+#   - Saves best_model_epoch_N.pth (best val) and model_epoch_50.pth (last)
+#   - Best epoch was 36 (val AUROC = 0.9621) in the paper run
+#
 # Requirements:
 #   conda activate drugban   (or equivalent env with requirements.txt installed)
 #   CUDA GPU recommended; CPU is supported but slow
@@ -93,7 +99,7 @@ with open('${ATTENTION_DIR}/GHSR_prediction_stats.json') as f:
     d = json.load(f)
 print(f\"{d['performance']['auroc']:.4f}\")
 ")
-echo "      AUROC: ${AUROC}  (paper reports 0.9621 for best_model_epoch_36)"
+echo "      AUROC: ${AUROC}  (on full 1,539-sample set; val AUROC during training = 0.9621)"
 
 # ── Step 3: class-differential attention analysis ────────────────
 echo ""
