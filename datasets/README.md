@@ -53,6 +53,24 @@ CC(C)CC1=CC=CC=C1...,MGAASGRRGP...,1
 
 The GPCR dataset used for transfer learning targets the **Growth Hormone Secretagogue Receptor (GHSR, UniProt Q92847)**.
 
+### Provenance and license
+
+| Column | Source | License |
+|--------|--------|---------|
+| `SMILES`, `Y` (IC50-derived class) | **ChEMBL** (EMBL-EBI) and **BindingDB** | CC BY-SA 3.0 / CC BY 4.0 |
+| `Protein` | UniProt Q92847 | CC BY 4.0 |
+| `cnnscore` | Computed by us with AutoDock-GPU | This project's terms |
+
+Because ChEMBL is **ShareAlike**, this dataset is distributed under
+**CC BY-SA 4.0** — see [`../LICENSE-DATA.md`](../LICENSE-DATA.md). Any adapted
+version you distribute must also be CC BY-SA. Required attribution:
+
+> Contains data from ChEMBL (EMBL-EBI), licensed under CC BY-SA 3.0, and from
+> BindingDB, licensed under CC BY 4.0. Modified for this work.
+
+Note that this differs from the source code (PolyForm Noncommercial 1.0.0) and
+the model parameters (request-based, noncommercial).
+
 ### Data Format
 
 ```

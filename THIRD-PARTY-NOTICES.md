@@ -73,14 +73,37 @@ imposes no obligation on separate works that merely depend on it.
 
 | Source | Terms | Used for |
 |--------|-------|----------|
-| BindingDB | CC BY 4.0 | Pre-training splits for the BiLSTM-BAN backbone |
-| GHSR activity data | See `datasets/README.md` | GPCR fine-tuning |
+| [ChEMBL](https://www.ebi.ac.uk/chembl/) (EMBL-EBI) | **CC BY-SA 3.0** | GHSR IC50 activity data (fine-tuning) |
+| [BindingDB](https://www.bindingdb.org/) | CC BY 4.0 | GHSR activity data; pre-training splits for the BiLSTM-BAN backbone |
+| AutoDock-GPU (computed by us) | This project's terms | `cnnscore` docking column |
 
-> **Action required before commercial distribution**: the upstream database for
-> the GHSR IC50 activity data is not yet recorded in this repository. Confirm and
-> document it. If it derives from ChEMBL (CC BY-SA 3.0), the ShareAlike term
-> propagates to redistributed derivative datasets. If it derives from BindingDB
-> (CC BY 4.0), attribution alone is sufficient.
+### Required attribution
+
+Any redistribution of the GHSR dataset must carry:
+
+> Contains data from ChEMBL (EMBL-EBI), licensed under CC BY-SA 3.0, and from
+> BindingDB, licensed under CC BY 4.0. Modified for this work.
+
+### ShareAlike — scope and limits
+
+ChEMBL is licensed **ShareAlike**. Consequences:
+
+1. **The GHSR dataset is distributed under CC BY-SA 4.0**, not CC BY-NC 4.0.
+   A NonCommercial restriction cannot lawfully be applied to ShareAlike material.
+   See [`LICENSE-DATA.md`](LICENSE-DATA.md).
+2. **ShareAlike does not extend to the source code**, which is an independent work
+   under PolyForm Noncommercial 1.0.0.
+3. **ShareAlike is not treated as extending to trained model parameters.** Whether
+   model weights constitute a derivative work of their training data is unsettled;
+   the prevailing interpretation, relied on across the industry, is that they do
+   not. Parties with commercial exposure should take their own advice.
+
+### Note for commercial distribution
+
+If a commercial product ships the GHSR dataset, the CC BY-SA 4.0 terms and the
+attribution above travel with it. A product that ships only the trained
+parameters, or that serves predictions without distributing the dataset, does not
+trigger ShareAlike on the dataset.
 
 ---
 

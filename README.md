@@ -460,8 +460,14 @@ reproduction of the published results. Commercial use requires a separate licens
 |-----------|---------|
 | Source code | [PolyForm Noncommercial 1.0.0](LICENSE.md) |
 | Model parameters | [TEMA-ENM Model Parameters Terms of Use](MODEL-WEIGHTS-TERMS.md) — on request, noncommercial |
-| Data and figures | [CC BY-NC 4.0](LICENSE-DATA.md) |
+| GHSR dataset | [CC BY-SA 4.0](LICENSE-DATA.md) — ShareAlike, inherited from ChEMBL |
+| Figures and analysis outputs | [CC BY-NC 4.0](LICENSE-DATA.md) |
 | Upstream components | [Third-party notices](THIRD-PARTY-NOTICES.md) |
+
+> The GHSR dataset is assembled from **ChEMBL** (CC BY-SA 3.0) and **BindingDB**
+> (CC BY 4.0). ChEMBL's ShareAlike term means the dataset is **CC BY-SA 4.0** and
+> cannot carry a NonCommercial restriction. This applies to the dataset only —
+> not to the source code, and not to the model parameters.
 
 Use by academic institutions, public research organizations, and government
 research bodies is noncommercial under these terms, regardless of funding source.
@@ -488,7 +494,8 @@ analysis — is our own work, described in the publications under [Citation](#ci
 ## References
 
 1. Cheng, Chen, Li & Re (2026). BiLSTM-Powered Bilinear Attention for Protein–Ligand Prediction. *bioRxiv*. doi:10.64898/2026.05.10.724184.
-2. Bai et al. (2023). Interpretable bilinear attention network with domain adaptation improves drug-target prediction. *Nature Machine Intelligence*. — upstream code base, see [Third-Party Code](#third-party-code).
-3. Liu et al. (2007). BindingDB: a web-accessible database of experimentally determined protein-ligand binding affinities. *Nucleic Acids Research*.
-4. Huang et al. (2021). MolTrans: Molecular Interaction Transformer for drug-target interaction prediction. *Bioinformatics*.
-5. Kim et al. (2018). Bilinear attention networks. *NeurIPS*.
+2. Bai et al. (2023). Interpretable bilinear attention network with domain adaptation improves drug-target prediction. *Nature Machine Intelligence*. — upstream code base, see [Third-party code](#third-party-code).
+3. Zdrazil et al. (2024). The ChEMBL Database in 2023. *Nucleic Acids Research*, 52(D1), D1180–D1192. — GHSR activity data source.
+4. Liu et al. (2007). BindingDB: a web-accessible database of experimentally determined protein-ligand binding affinities. *Nucleic Acids Research*.
+5. Huang et al. (2021). MolTrans: Molecular Interaction Transformer for drug-target interaction prediction. *Bioinformatics*.
+6. Kim et al. (2018). Bilinear attention networks. *NeurIPS*.
