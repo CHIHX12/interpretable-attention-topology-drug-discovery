@@ -1,0 +1,70 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the software itself and the BiLSTM-BAN base-model preprint listed under references."
+title: "TEMA-ENM: An Interpretable Attention-Topology Framework Decouples Affinity and Efficacy from Sequence Alone"
+abstract: >-
+  TEMA-ENM is an interpretable deep transfer-learning framework that decouples
+  binding affinity from signaling efficacy using a bilinear attention network,
+  from protein sequence alone. Starting from the pre-trained BiLSTM-BAN
+  protein-ligand model, it is fine-tuned on the growth hormone secretagogue
+  receptor (GHSR) with 1,539 ligands and infers activation- versus
+  inhibition-associated residues and their co-attention network topology
+  without crystallographic priors.
+type: software
+license-url: "https://polyformproject.org/licenses/noncommercial/1.0.0"
+repository-code: "https://github.com/CHIHX12/interpretable-attention-topology-drug-discovery"
+authors:
+  - family-names: Cheng
+    given-names: Chih-Yang
+    orcid: "https://orcid.org/0009-0002-2694-247X"
+    affiliation: "Department of Chemistry, National Chung Hsing University, Taichung 402, Taiwan"
+  - family-names: Wu
+    given-names: Yi-Huan
+    affiliation: "Department of Chemistry, R.O.C. Military Academy, Kaohsiung, Taiwan"
+  - family-names: Li
+    given-names: Feng-Yin
+    orcid: "https://orcid.org/0000-0002-8829-5776"
+    affiliation: "Department of Chemistry, National Chung Hsing University, Taichung 402, Taiwan"
+keywords:
+  - bilinear attention network
+  - transfer learning
+  - GPCR
+  - drug-target interaction
+  - interpretable machine learning
+  - attention topology
+  - structure-free drug discovery
+references:
+  - type: article
+    title: "BiLSTM-Powered Bilinear Attention for Protein-Ligand Prediction"
+    doi: "10.64898/2026.05.10.724184"
+    url: "https://doi.org/10.64898/2026.05.10.724184"
+    year: 2026
+    journal: bioRxiv
+    notes: "Base model used for transfer learning in TEMA-ENM."
+    authors:
+      - family-names: Cheng
+        given-names: Chih-Yang
+        orcid: "https://orcid.org/0009-0002-2694-247X"
+      - family-names: Chen
+        given-names: Yi-An
+        orcid: "https://orcid.org/0000-0003-4936-8060"
+      - family-names: Li
+        given-names: Feng-Yin
+        orcid: "https://orcid.org/0000-0002-8829-5776"
+      - family-names: Re
+        given-names: Suyong
+        orcid: "https://orcid.org/0000-0002-3752-6554"
+  - type: article
+    title: "Interpretable bilinear attention network with domain adaptation improves drug-target prediction"
+    doi: "10.1038/s42256-022-00605-1"
+    year: 2023
+    journal: "Nature Machine Intelligence"
+    notes: "Upstream MIT-licensed code base for parts of the training scaffold."
+    authors:
+      - family-names: Bai
+        given-names: Peizhen
+      - family-names: Miljkovic
+        given-names: Filip
+      - family-names: John
+        given-names: Bino
+      - family-names: Lu
+        given-names: Haiping

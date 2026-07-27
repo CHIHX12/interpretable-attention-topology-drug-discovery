@@ -27,17 +27,14 @@ env/
 venv/
 ENV/
 
-# PyTorch model checkpoints (training outputs — not tracked)
+# PyTorch model checkpoints — NEVER tracked.
+# Trained parameters are distributed on request under MODEL-WEIGHTS-TERMS.md,
+# not through this repository. Do not add exceptions here.
 result/
 *.pth
 *.pt
 *.ckpt
-# Exception: curated model weights committed for reproducibility
-!models/
-!models/pretrained/
-!models/pretrained/*.pth
-!models/finetuned/
-!models/finetuned/*.pth
+models/
 
 # Large data files (download separately — see datasets/README.md)
 datasets/bindingdb/

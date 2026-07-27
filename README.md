@@ -1,11 +1,13 @@
-# An Interpretable Attention-Topology Framework Decouples Affinity and Efficacy in Structure-Free Drug Discovery
+# TEMA-ENM: An Interpretable Attention-Topology Framework Decouples Affinity and Efficacy from Sequence Alone
 
 **Chih-Yang Cheng<sup>1\*</sup>, Yi-Huan Wu<sup>2\*</sup>, and Feng-Yin Li<sup>1\*</sup>**
 
 <sup>1</sup>Department of Chemistry, National Chung Hsing University, Taichung 402, Taiwan.  
 <sup>2</sup>Department of Chemistry, R.O.C. Military Academy, Kaohsiung, Taiwan.
 
-> **Built upon**: [DrugBAN](https://doi.org/10.1038/s42256-022-00605-1) (Bai et al., *Nature Machine Intelligence* 2023)
+> **Base model**: [BiLSTM-Powered Bilinear Attention for Protein–Ligand Prediction](https://doi.org/10.64898/2026.05.10.724184)
+> (Cheng, Chen, Li & Re, *bioRxiv* 2026) — TEMA-ENM performs transfer learning from this
+> pre-trained BiLSTM-BAN model. Code: [BiLSTM-BAN-ProteinLigand](https://github.com/CHIHX12/BiLSTM-BAN-ProteinLigand)
 
 ---
 
@@ -17,18 +19,23 @@ While deep learning predicts drug binding affinities, most models remain black b
 
 ## Overview
 
-This repository provides the implementation of the **Interpretable Attention-Topology Framework** described in the paper above. It extends the DrugBAN framework with **BiLSTM protein/drug encoders** and applies **transfer learning** to identify amino acid residues critical for GPCR **activation** vs. **inhibition** — using only sequence information, without 3D structures.
+This repository provides the implementation of **TEMA-ENM**, the interpretable attention-topology
+framework described in the paper above. It takes our previously published **BiLSTM-BAN** protein–ligand
+model ([Cheng et al., *bioRxiv* 2026](https://doi.org/10.64898/2026.05.10.724184)) as the pre-trained
+backbone and applies **transfer learning** to identify amino acid residues critical for GPCR
+**activation** vs. **inhibition** — using only sequence information, without 3D structures.
 
-### Key Contributions over Original DrugBAN
+### Key Contributions over the BiLSTM-BAN Base Model
 
-| Feature | Original DrugBAN | This Work |
-|---------|-----------------|-----------|
-| Protein encoder | CNN | **BiLSTM** (bidirectional, physicochemical features) |
-| Drug encoder | GCN (graph) | GCN or **BiLSTM** (SELFIES sequences) |
+| Feature | BiLSTM-BAN (base model, bioRxiv 2026) | TEMA-ENM (this work) |
+|---------|---------------------------------------|----------------------|
+| Protein encoder | BiLSTM (bidirectional, physicochemical features) | Same, fine-tuned on GPCR |
+| Drug encoder | GCN or BiLSTM (SELFIES sequences) | Same, fine-tuned on GPCR |
 | Prediction task | Binary binding | **3-class** (Active / Intermediate / Inactive) |
-| Training strategy | From scratch | **Transfer learning** (BindingDB → GPCR) |
+| Training strategy | Pre-training on BindingDB | **Transfer learning** (BindingDB → GPCR) |
 | Multi-task | No | **Yes** (binding class + docking score regression) |
-| Interpretability | Drug-protein attention | **Class-differential attention** (activation vs inhibition residues) |
+| Interpretability | Drug–protein attention | **Class-differential attention** (activation vs inhibition residues) |
+| Topology analysis | No | **Residue co-attention network / overlap topology** |
 | Validation | Random split | **LORO** (Leave-One-Receptor-Out) |
 
 ---
@@ -94,7 +101,8 @@ pip install -r requirements.txt
 
 ### Pre-training Data (BindingDB)
 
-Download from the [original DrugBAN repository](https://github.com/peizhenbai/DrugBAN):
+The BindingDB splits used to pre-train the BiLSTM-BAN backbone are distributed with the base-model
+repository, [BiLSTM-BAN-ProteinLigand](https://github.com/CHIHX12/BiLSTM-BAN-ProteinLigand):
 
 ```bash
 # Place downloaded data in:
@@ -130,7 +138,8 @@ python split_ghsr_data.py --input datasets/GPCR_resarch/GHSR_training_data.csv \
 
 ### One-command reproduce (recommended)
 
-All model weights and data are included in the repository.
+All data is included in the repository. **Trained model parameters are distributed
+separately on request** — see [Model parameters](#model-parameters) below.
 
 ```bash
 # Clone and set up environment
@@ -143,7 +152,7 @@ conda activate drugban
 bash reproduce.sh
 ```
 
-This runs batch prediction on the provided fine-tuned model, extracts attention weights, performs class-differential analysis (active vs. inactive residues), and generates consensus residue outputs including a PyMOL `.pml` script.
+This runs batch prediction on the provided fine-tuned model, extracts attention weights, performs class-differential analysis (active vs. inactive residues), generates consensus residue outputs including a PyMOL `.pml` script, and renders the publication network-overlap figures at **600 dpi**.
 
 To re-run fine-tuning from scratch (~30 min on GPU):
 
@@ -151,12 +160,20 @@ To re-run fine-tuning from scratch (~30 min on GPU):
 bash reproduce.sh --retrain
 ```
 
-### Provided model weights
+### Model parameters
 
-| File | Description | Val AUROC |
-|------|-------------|-----------|
-| `models/pretrained/DrugBAN_BiLSTM_BindingDB_epoch94.pth` | Pre-trained on BindingDB (binary binding, 50 epochs, best val) | — |
-| `models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth` | Fine-tuned on GHSR — best epoch out of 50 total | **0.9621** |
+**Trained parameters are not distributed in this repository.** They are available
+on request for noncommercial use, under the terms in
+[`MODEL-WEIGHTS-TERMS.md`](MODEL-WEIGHTS-TERMS.md). Academic requests are normally
+granted; reviewers and editors are provided a private link on request.
+
+| Expected path | Description | Val AUROC |
+|---------------|-------------|-----------|
+| `models/pretrained/DrugBAN_BiLSTM_BindingDB_epoch94.pth` | **BiLSTM-BAN base model** — pre-trained on BindingDB (binary binding, 50 epochs, best val); see [bioRxiv 2026](https://doi.org/10.64898/2026.05.10.724184) | — |
+| `models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth` | **TEMA-ENM** — fine-tuned on GHSR, best epoch out of 50 total | **0.9621** |
+
+Place granted files at the paths above. Everything in this repository other than
+the parameters is sufficient to retrain from scratch with `bash reproduce.sh --retrain`.
 
 > **Training strategy**: the trainer runs for the full `MAX_EPOCH` (50) and saves the epoch with the best validation metric (val loss for multitask, AUROC for single-task). There is no early stopping — overfitting is prevented by selecting the best checkpoint rather than stopping training early.
 
@@ -199,6 +216,36 @@ python consensus_analysis_ghsr.py \
     --output_dir datasets/GPCR_resarch/consensus_results_reproduce \
     --protein_length 523
 ```
+
+**Step 5 — Publication network-overlap figures (600 dpi)**:
+
+These scripts read the user-specified 25-pair tables
+(`exact_five_{active,inactive}_25pairs.csv`, provided under
+`Important_Analysis/{Active,Inactive}/`) and write into
+`result/class_attention_analysis_pdb/`. All figures are rendered at **600 dpi**
+with journal-sized fonts (PNG + vector PDF).
+
+```bash
+# Sharing matrix / overlap diagram / functional regions (Active & Inactive)
+python analyze_network_overlap_active.py
+python analyze_network_overlap_inactive.py
+
+# 5×5 ΔImp heatmaps + constitutive pairing networks (Active & Inactive)
+python create_exact_five_figures.py
+
+# Inactive 3-way sharing diagram
+python analyze_network_overlap_inactive_3way.py
+```
+
+| Script | Figures produced (600 dpi PNG + PDF) |
+|--------|--------------------------------------|
+| `analyze_network_overlap_active.py` / `_inactive.py` | `target_constitutive_sharing_matrix_*`, `network_overlap_diagram_*`, `functional_regions_3d_*` |
+| `create_exact_five_figures.py` | `exact_five_{active,inactive}_heatmap`, `exact_five_{active,inactive}_network` |
+| `analyze_network_overlap_inactive_3way.py` | `network_overlap_diagram_inactive_3way` |
+
+> All plotting scripts set `savefig.dpi = 600` and enlarged journal fonts via
+> `matplotlib.rcParams`. To change the export resolution, edit the
+> `plt.rcParams.update({...})` block near the top of each script.
 
 ---
 
@@ -298,11 +345,13 @@ See `PYMOL_VISUALIZATION_GUIDE.md` for detailed instructions.
 ```
 DrugBAN-BiLSTM/
 ├── reproduce.sh               # One-command reproducibility script
-├── models/
-│   ├── pretrained/
-│   │   └── DrugBAN_BiLSTM_BindingDB_epoch94.pth  # Pre-trained on BindingDB
-│   └── finetuned/
-│       └── DrugBAN_BiLSTM_GHSR_epoch36.pth        # Fine-tuned on GHSR (AUROC=0.9621)
+├── LICENSE.md                 # PolyForm Noncommercial 1.0.0 (source code)
+├── LICENSE-DATA.md            # CC BY-NC 4.0 (data and figures)
+├── MODEL-WEIGHTS-TERMS.md     # Model parameters — request-based, noncommercial
+├── THIRD-PARTY-NOTICES.md     # DrugBAN MIT notice + dependency licenses
+├── models/                    # NOT in the repository — see MODEL-WEIGHTS-TERMS.md
+│   ├── pretrained/            #   place DrugBAN_BiLSTM_BindingDB_epoch94.pth here
+│   └── finetuned/             #   place DrugBAN_BiLSTM_GHSR_epoch36.pth here
 ├── main.py                    # Training entry point
 ├── models.py                  # Model definitions (DrugBAN, BiLSTM encoders)
 ├── ban.py                     # Bilinear Attention Network layer
@@ -339,6 +388,15 @@ DrugBAN-BiLSTM/
 ├── aggregate_attention_analysis.py
 ├── aggregate_attention_by_protein.py
 │
+├── analyze_network_overlap.py             # Network-overlap figures (base / active data)
+├── analyze_network_overlap_active.py      # Active: sharing matrix, overlap, 3D regions (600 dpi)
+├── analyze_network_overlap_inactive.py    # Inactive: sharing matrix, overlap, 3D regions (600 dpi)
+├── analyze_network_overlap_inactive_3way.py  # Inactive 3-way sharing diagram (600 dpi)
+├── create_exact_five_figures.py           # 5×5 ΔImp heatmaps + pairing networks (600 dpi)
+├── Important_Analysis/                     # Curated 600-dpi figures + 25-pair input tables
+│   ├── Active/    exact_five_active_25pairs.csv + figures
+│   └── Inactive/  exact_five_inactive_25pairs.csv + figures
+│
 ├── run_ghsr_transfer_learning.sh   # Transfer learning pipeline
 ├── run_loro_transfer_learning.sh   # LORO validation pipeline
 │
@@ -366,24 +424,25 @@ This approach has recovered known binding site residues in GPCR structures with 
 
 ## Citation
 
-If you use this work, please cite both the original DrugBAN paper and this repository:
+If you use this work, please cite **both** the BiLSTM-BAN base model and this repository:
 
-**Original DrugBAN**:
+**Base model (BiLSTM-BAN)** — the pre-trained backbone used for transfer learning:
 ```bibtex
-@article{bai2023drugban,
-  title   = {Interpretable bilinear attention network with domain adaptation improves drug-target prediction},
-  author  = {Peizhen Bai and Filip Miljkovi{\'c} and Bino John and Haiping Lu},
-  journal = {Nature Machine Intelligence},
-  year    = {2023},
-  doi     = {10.1038/s42256-022-00605-1}
+@article{cheng2026bilstmban,
+  title   = {BiLSTM-Powered Bilinear Attention for Protein--Ligand Prediction},
+  author  = {Chih-Yang Cheng and Yi-An Chen and Feng-Yin Li and Suyong Re},
+  journal = {bioRxiv},
+  year    = {2026},
+  doi     = {10.64898/2026.05.10.724184},
+  url     = {https://doi.org/10.64898/2026.05.10.724184}
 }
 ```
 
-**This Work**:
+**This Work (TEMA-ENM)**:
 ```bibtex
-@article{cheng2026attention_topology,
-  title   = {An Interpretable Attention-Topology Framework Decouples Affinity and Efficacy
-             in Structure-Free Drug Discovery},
+@article{cheng2026temaenm,
+  title   = {TEMA-ENM: An Interpretable Attention-Topology Framework Decouples
+             Affinity and Efficacy from Sequence Alone},
   author  = {Chih-Yang Cheng and Yi-Huan Wu and Feng-Yin Li},
   year    = {2026},
   url     = {https://github.com/CHIHX12/interpretable-attention-topology-drug-discovery}
@@ -392,9 +451,44 @@ If you use this work, please cite both the original DrugBAN paper and this repos
 
 ---
 
+## License
+
+TEMA-ENM is **free for noncommercial use** — academic research, teaching, and
+reproduction of the published results. Commercial use requires a separate license.
+
+| Component | License |
+|-----------|---------|
+| Source code | [PolyForm Noncommercial 1.0.0](LICENSE.md) |
+| Model parameters | [TEMA-ENM Model Parameters Terms of Use](MODEL-WEIGHTS-TERMS.md) — on request, noncommercial |
+| Data and figures | [CC BY-NC 4.0](LICENSE-DATA.md) |
+| Upstream components | [Third-party notices](THIRD-PARTY-NOTICES.md) |
+
+Use by academic institutions, public research organizations, and government
+research bodies is noncommercial under these terms, regardless of funding source.
+
+**For commercial licensing**, contact Chih-Yang Cheng
+([ORCID](https://orcid.org/0009-0002-2694-247X)), Department of Chemistry,
+National Chung Hsing University.
+
+### Third-party code
+
+Portions of the training scaffold (`ban.py`, parts of `models.py`, `trainer.py`,
+`configs.py`, `dataloader.py`) originate from [DrugBAN](https://github.com/peizhenbai/DrugBAN),
+released under the MIT License (Copyright © 2022 Peizhen Bai). The MIT License
+permits sublicensing; the original notice is retained in
+[`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) as required, and this does not
+restrict anyone's independent right to obtain DrugBAN under its own MIT terms.
+
+TEMA-ENM's scientific contribution — the BiLSTM encoders, transfer-learning
+protocol, 3-class multi-task head, and class-differential attention-topology
+analysis — is our own work, described in the publications under [Citation](#citation).
+
+---
+
 ## References
 
-1. Bai et al. (2023). Interpretable bilinear attention network with domain adaptation improves drug-target prediction. *Nature Machine Intelligence*.
-2. Liu et al. (2007). BindingDB: a web-accessible database of experimentally determined protein-ligand binding affinities. *Nucleic Acids Research*.
-3. Huang et al. (2021). MolTrans: Molecular Interaction Transformer for drug-target interaction prediction. *Bioinformatics*.
-4. Kim et al. (2018). Bilinear attention networks. *NeurIPS*.
+1. Cheng, Chen, Li & Re (2026). BiLSTM-Powered Bilinear Attention for Protein–Ligand Prediction. *bioRxiv*. doi:10.64898/2026.05.10.724184.
+2. Bai et al. (2023). Interpretable bilinear attention network with domain adaptation improves drug-target prediction. *Nature Machine Intelligence*. — upstream code base, see [Third-Party Code](#third-party-code).
+3. Liu et al. (2007). BindingDB: a web-accessible database of experimentally determined protein-ligand binding affinities. *Nucleic Acids Research*.
+4. Huang et al. (2021). MolTrans: Molecular Interaction Transformer for drug-target interaction prediction. *Bioinformatics*.
+5. Kim et al. (2018). Bilinear attention networks. *NeurIPS*.

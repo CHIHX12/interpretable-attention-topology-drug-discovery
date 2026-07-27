@@ -18,6 +18,58 @@ from collections import defaultdict, Counter
 plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial Unicode MS', 'SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
+# Journal-quality defaults: 600 dpi output + larger, less-crowded fonts
+plt.rcParams.update({
+    'savefig.dpi': 600,
+    'figure.dpi': 150,
+    'font.size': 13,
+    'axes.titlesize': 17,
+    'axes.labelsize': 15,
+    'xtick.labelsize': 12,
+    'ytick.labelsize': 13,
+    'legend.fontsize': 13,
+})
+
+def _build_region_points(regions, extract_pdb, spread=14.0, seed=42):
+    """Assign each residue an x (PDB position) and a single-RNG random y.
+
+    Using one RNG for all regions (instead of reseeding per region) avoids the
+    repeated y-pattern that put residues from different regions on top of each
+    other.
+    """
+    rng = np.random.default_rng(seed)
+    pts, region_meta = [], {}
+    for ri, (residues, label, color, marker) in enumerate(regions):
+        region_meta[ri] = (label, color, marker)
+        ys = rng.normal(0, spread, size=len(residues))
+        for r, y in zip(residues, ys):
+            pts.append({'x': extract_pdb(r), 'y': float(y), 'res': r, 'ri': ri})
+    return pts, region_meta
+
+
+def _deoverlap_y(pts, x_frac=0.045, min_gap=5.5, iters=300):
+    """Greedily separate markers that sit at nearby sequence positions by
+    nudging their y-values apart, so labels no longer overlap."""
+    if len(pts) < 2:
+        return
+    xs = [p['x'] for p in pts]
+    xspan = (max(xs) - min(xs)) or 1.0
+    for _ in range(iters):
+        moved = False
+        for i in range(len(pts)):
+            for j in range(i + 1, len(pts)):
+                if abs(pts[i]['x'] - pts[j]['x']) < xspan * x_frac:
+                    dy = pts[i]['y'] - pts[j]['y']
+                    if abs(dy) < min_gap:
+                        push = (min_gap - abs(dy)) / 2 + 0.1
+                        s = 1.0 if dy >= 0 else -1.0
+                        pts[i]['y'] += s * push
+                        pts[j]['y'] -= s * push
+                        moved = True
+        if not moved:
+            break
+
+
 def main():
     # read 25 pairs data
     base_dir = Path('result/class_attention_analysis_pdb')
@@ -224,22 +276,24 @@ def create_sharing_matrix(df, base_dir):
         matrix[t_idx, c_idx] = 1 # use
 
     # 
-    fig, ax = plt.subplots(figsize=(20, 6))
+    fig, ax = plt.subplots(figsize=(17, 8))
 
-    sns.heatmap(matrix, cmap='RdYlBu_r', cbar_kws={'label': 'Used (1) or Not (0)'},
+    sns.heatmap(matrix, cmap='RdYlBu_r',
+                cbar_kws={'label': 'Used (1) or Not (0)'},
                 xticklabels=constitutives, yticklabels=targets,
                 linewidths=0.5, linecolor='gray', ax=ax)
+    ax.figure.axes[-1].yaxis.label.set_size(14)
 
     ax.set_title('Target-Constitutive Sharing Matrix\n'
                  '(Red = Used, Blue = Not Used)',
-                 fontsize=14, weight='bold', pad=20)
-    ax.set_xlabel('Constitutive Residue', fontsize=12, weight='bold')
-    ax.set_ylabel('Active Target Residue', fontsize=12, weight='bold')
+                 fontsize=18, weight='bold', pad=22)
+    ax.set_xlabel('Constitutive Residue', fontsize=16, weight='bold')
+    ax.set_ylabel('Active Target Residue', fontsize=16, weight='bold')
 
-    plt.xticks(rotation=90, fontsize=8)
-    plt.yticks(fontsize=11)
+    plt.xticks(rotation=90, fontsize=18, weight='bold')
+    plt.yticks(fontsize=18, weight='bold')
     plt.tight_layout()
-    plt.savefig(base_dir / 'target_constitutive_sharing_matrix.png', dpi=300, bbox_inches='tight')
+    plt.savefig(base_dir / 'target_constitutive_sharing_matrix.png', dpi=600, bbox_inches='tight')
     plt.savefig(base_dir / 'target_constitutive_sharing_matrix.pdf', bbox_inches='tight')
     plt.close()
 
@@ -279,28 +333,28 @@ def create_overlap_network(sharing_df, base_dir):
             x = radius * np.cos(angles[i])
             y = radius * np.sin(angles[i])
 
-            ax.scatter([x], [y], s=200, c=color, edgecolors='black', linewidths=1.5, zorder=3)
+            ax.scatter([x], [y], s=420, c=color, edgecolors='black', linewidths=2, zorder=3)
             ax.text(x, y, row['Constitutive'], ha='center', va='center',
-                   fontsize=8, weight='bold', color='white')
+                   fontsize=11, weight='bold', color='white')
 
     ax.set_xlim(-6, 6)
     ax.set_ylim(-6, 6)
     ax.set_aspect('equal')
     ax.axis('off')
-    ax.legend(loc='upper right', fontsize=11, framealpha=0.9)
+    ax.legend(loc='upper right', fontsize=13, framealpha=0.9)
     ax.set_title('Network Overlap Diagram\n'
                  'Constitutive Residues by Sharing Level\n'
                  '(Inner circles = More shared = Core functional regions)',
-                 fontsize=14, weight='bold', pad=20)
+                 fontsize=18, weight='bold', pad=22)
 
     plt.tight_layout()
-    plt.savefig(base_dir / 'network_overlap_diagram.png', dpi=300, bbox_inches='tight')
+    plt.savefig(base_dir / 'network_overlap_diagram.png', dpi=600, bbox_inches='tight')
     plt.savefig(base_dir / 'network_overlap_diagram.pdf', bbox_inches='tight')
     plt.close()
 
 def create_functional_regions_plot(core_region, s125_region, low_imp_region, base_dir):
     """createfunctionregion - 3D region"""
-    fig, ax = plt.subplots(figsize=(14, 10))
+    fig, ax = plt.subplots(figsize=(16, 11))
 
     # extract PDB mapping
     def extract_pdb(res_name):
@@ -314,41 +368,45 @@ def create_functional_regions_plot(core_region, s125_region, low_imp_region, bas
         (low_imp_region, 'Low Importance\n(C198 & P200)', 'blue', '^')
     ]
 
-    all_y_positions = []
+    pts, region_meta = _build_region_points(regions, extract_pdb)
+    _deoverlap_y(pts)
 
-    for residues, label, color, marker in regions:
-        if len(residues) == 0:
+    for ri, (label, color, marker) in region_meta.items():
+        rpts = [p for p in pts if p['ri'] == ri]
+        if not rpts:
             continue
+        ax.scatter([p['x'] for p in rpts], [p['y'] for p in rpts],
+                   s=340, c=color, marker=marker, edgecolors='black',
+                   linewidths=2, alpha=0.75, label=label, zorder=3)
+        for p in rpts:
+            ax.annotate(p['res'], xy=(p['x'], p['y']), xytext=(0, 13),
+                        textcoords='offset points', ha='center', va='bottom',
+                        fontsize=12, weight='bold', color=color,
+                        bbox=dict(boxstyle='round,pad=0.35', facecolor='white',
+                                  edgecolor=color, alpha=0.92, linewidth=1.5),
+                        arrowprops=dict(arrowstyle='-', color=color,
+                                        lw=1.0, alpha=0.55), zorder=4)
 
-        pdb_nums = [extract_pdb(r) for r in residues]
+    all_y_positions = [p['y'] for p in pts]
 
-        # X : PDB sequence
-        # Y : 3D 
-        np.random.seed(42)
-        y_positions = np.random.randn(len(pdb_nums)) * 10
-
-        all_y_positions.extend(y_positions)
-
-        ax.scatter(pdb_nums, y_positions, s=300, c=color, marker=marker,
-                  edgecolors='black', linewidths=2, alpha=0.7, label=label, zorder=3)
-
-        # residue
-        for x, y, res_name in zip(pdb_nums, y_positions, residues):
-            ax.text(x, y + 3, res_name, ha='center', va='bottom',
-                   fontsize=9, weight='bold', color=color)
+    # give the scattered points headroom so labels stay inside the axes
+    if all_y_positions:
+        ymin, ymax = min(all_y_positions), max(all_y_positions)
+        yr = (ymax - ymin) or 1.0
+        ax.set_ylim(ymin - 0.18 * yr - 3, ymax + 0.42 * yr + 4)
 
     ax.axhline(0, color='gray', linestyle='--', alpha=0.3, linewidth=1)
-    ax.set_xlabel('PDB Residue Number (Sequence Position)', fontsize=13, weight='bold')
-    ax.set_ylabel('Spatial Distribution (Arbitrary Units)', fontsize=13, weight='bold')
+    ax.set_xlabel('PDB Residue Number (Sequence Position)', fontsize=16, weight='bold')
+    ax.set_ylabel('Spatial Distribution (Arbitrary Units)', fontsize=16, weight='bold')
     ax.set_title('Functional Regions in 3D Space\n'
                  'Constitutive Residues Grouped by Target Sharing\n'
                  '(X-axis = Sequence position, Y-axis = Spatial clustering)',
-                 fontsize=14, weight='bold', pad=20)
-    ax.legend(loc='upper right', fontsize=11, framealpha=0.9)
+                 fontsize=18, weight='bold', pad=22)
+    ax.legend(loc='upper right', fontsize=13, framealpha=0.9)
     ax.grid(True, alpha=0.2)
 
     plt.tight_layout()
-    plt.savefig(base_dir / 'functional_regions_3d.png', dpi=300, bbox_inches='tight')
+    plt.savefig(base_dir / 'functional_regions_3d.png', dpi=600, bbox_inches='tight')
     plt.savefig(base_dir / 'functional_regions_3d.pdf', bbox_inches='tight')
     plt.close()
 
