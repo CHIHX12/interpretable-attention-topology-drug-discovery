@@ -124,25 +124,27 @@ axA.grid(alpha=0.3)
 axA.spines[["top", "right"]].set_visible(False)
 
 # Panel B: each hub's R across step counts (labels spread to avoid overlap)
-def spread_labels(ax, pairs, x_end, x_lab, color, gap=0.42):
-    pairs = sorted(pairs, key=lambda t: t[0])      # (log10 y, name)
+def spread_labels(ax, pairs, x_end, x_lab, gap=0.42):
+    """Place every label in one pass, so the two colour groups cannot collide."""
+    pairs = sorted(pairs, key=lambda t: t[0])      # (log10 y, name, colour)
     placed = []
-    for ly, _ in pairs:
+    for ly, _, _ in pairs:
         placed.append(ly if not placed else max(ly, placed[-1] + gap))
-    for (ly, name), yp in zip(pairs, placed):
+    for (ly, name, colour), yp in zip(pairs, placed):
         ax.annotate(name, xy=(x_end, 10 ** ly), xytext=(x_lab, 10 ** yp),
-                    fontsize=5.5, color=color, va="center", ha="left", fontweight="bold",
-                    arrowprops=dict(arrowstyle="-", color=color, lw=0.4, alpha=0.5))
+                    fontsize=5.5, color=colour, va="center", ha="left", fontweight="bold",
+                    arrowprops=dict(arrowstyle="-", color=colour, lw=0.4, alpha=0.5))
 
 for h in ACTIVE:
     axB.plot(xs, [Rcp[s][idx[h]] for s in xs], "o-", color="#E8731C", lw=0.79, ms=3.2, alpha=0.9)
 for h in INACTIVE:
     axB.plot(xs, [max(Rcp[s][idx[h]], 1e-4) for s in xs], "s-", color="#1F6FBF", lw=0.79, ms=2.8, alpha=0.9)
 x_end = xs[-1]; x_lab = x_end * 1.35
-spread_labels(axB, [(np.log10(Rcp[x_end][idx[h]]), id2name[h]) for h in ACTIVE],
-              x_end, x_lab, "#E8731C")
-spread_labels(axB, [(np.log10(max(Rcp[x_end][idx[h]], 1e-4)), id2name[h]) for h in INACTIVE],
-              x_end, x_lab, "#1F6FBF")
+spread_labels(axB,
+              [(np.log10(Rcp[x_end][idx[h]]), id2name[h], "#E8731C") for h in ACTIVE]
+              + [(np.log10(max(Rcp[x_end][idx[h]], 1e-4)), id2name[h], "#1F6FBF")
+                 for h in INACTIVE],
+              x_end, x_lab)
 axB.set_xlim(xs[0] * 0.85, x_end * 2.4)
 axB.axhline(1.0, color="black", ls="--", lw=0.55)
 axB.text(xs[0], 1.15, "R = 1 (crossover)", fontsize=5.5, va="bottom")
