@@ -212,68 +212,82 @@ def ligand_distance_8jsr():
     return {r: min(math.dist(a, b) for a in v for b in lig) for r, v in rec.items()}
 
 
-def figure_s9(n_perm=1000, seed=0):
-    """Label permutation, run for every seed rather than one.
+def figure_s9(n_draw=1000, seed=0):
+    """Proximity to the ligand against randomly drawn residue sets.
 
-    A single model gives a significant result here; it does not replicate, and
-    the main text says so. The figure has to show that, so the test is repeated
-    for all ten fine-tuning seeds.
+    This is the null model that revision/pocket_enrichment.py implements and
+    that the main text reports. The label-permutation null described alongside
+    it is a different test; its script was never deposited and a fresh
+    implementation does not reproduce the reported outcome, so it is not
+    plotted here.
     """
     dist = ligand_distance_8jsr()
     resn = np.arange(FIRST, LAST + 1)
     cols = resn - OFFSET
     dvec = np.array([dist.get(r, np.nan) for r in resn])
-    ok = ~np.isnan(dvec)
-
-    def medians(A, L):
-        """Median ligand distance of the top ten |delta| for each label vector."""
-        n1 = L.sum(1, keepdims=True)
-        n0 = L.shape[1] - n1
-        d = (L @ A) / n1 - ((1 - L) @ A) / n0
-        out = []
-        for row in d:
-            top = np.argsort(-np.abs(np.where(ok, row, 0.0)))[:10]
-            out.append(np.median(dvec[top]))
-        return np.array(out)
-
+    resolved = np.flatnonzero(~np.isnan(dvec))
+    background = float(np.nanmedian(dvec))
     rng = np.random.default_rng(seed)
-    obs, pvals, nulls = [], [], []
+
+    def test(idx):
+        obs = float(np.nanmedian(dvec[idx]))
+        draws = np.array([np.median(dvec[rng.choice(resolved, len(idx), replace=False)])
+                          for _ in range(n_draw)])
+        p = (np.sum(draws <= obs) + 1) / (n_draw + 1)
+        return obs, draws, float(p)
+
     files = sorted(ATT.glob("featoff_seed*.npz"))
+    rows = {"responding": [], "top ten": []}
+    draws_ref = None
     for f in files:
         z = np.load(f, allow_pickle=True)
         A, y = z["unmasked_max"][:, cols], z["label"].astype(int)
-        o = medians(A, y[None, :].astype(float))[0]
-        L = np.array([rng.permutation(y) for _ in range(n_perm)], dtype=float)
-        null = medians(A, L)
-        obs.append(o); nulls.append(null); pvals.append(float((null <= o).mean()))
+        d = A[y == 1].mean(0) - A[y == 0].mean(0)
+        # the deposited criterion, matching revision/feature_dependence.py
+        responding = np.flatnonzero((A.std(0) > 1e-6) & ~np.isnan(dvec))
+        top10 = np.array([i for i in np.argsort(-np.abs(d)) if not np.isnan(dvec[i])][:10])
+        for name, idx in (("responding", responding), ("top ten", top10)):
+            obs, draws, pv = test(idx)
+            rows[name].append((obs, pv))
+            if name == "top ten" and draws_ref is None:
+                draws_ref = draws
 
     fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 2.9), layout="constrained")
-    seeds = [int(f.stem.split("seed")[-1]) for f in files]
-    axes[0].hist(np.concatenate(nulls), bins=40, color=GREY, edgecolor="black",
-                 linewidth=0.3, label=f"{n_perm} relabellings x {len(files)} seeds")
-    for o in obs:
-        axes[0].axvline(o, color=RED, lw=0.9, alpha=0.8)
-    axes[0].axvline(obs[0], color=RED, lw=0.9, label="observed, one line per seed")
-    axes[0].set_xlabel("median distance to the ligand in 8JSR of\nthe ten strongest residues (Å)")
+    axes[0].hist(draws_ref, bins=34, color=GREY, edgecolor="black", linewidth=0.3,
+                 label=f"{n_draw} random residue sets of ten")
+    for obs, _ in rows["top ten"]:
+        axes[0].axvline(obs, color=RED, lw=0.9, alpha=0.85)
+    axes[0].axvline(rows["top ten"][0][0], color=RED, lw=0.9,
+                    label="observed, one line per seed")
+    axes[0].axvline(background, color=BLUE, lw=1.2, ls="--",
+                    label=f"receptor background, {background:.1f} \u00c5")
+    axes[0].set_xlabel("median distance to the ligand in 8JSR (\u00c5)")
     axes[0].set_ylabel("count")
     panel(axes[0], "a")
 
-    axes[1].bar(range(len(seeds)), pvals, color=[RED if p < 0.05 else GREY for p in pvals],
-                edgecolor="black", linewidth=0.4)
-    axes[1].axhline(0.05, color=BLUE, lw=1.0, ls="--")
-    axes[1].text(len(seeds) - 0.4, 0.055, "P = 0.05", color=BLUE, fontsize=7, ha="right")
-    axes[1].set_xticks(range(len(seeds)))
-    axes[1].set_xticklabels(seeds, rotation=90)
+    x = np.arange(len(files))
+    for name, colour, marker in (("responding", BLUE, "o"), ("top ten", RED, "s")):
+        axes[1].plot(x, [o for o, _ in rows[name]], marker + "-", ms=3.5, lw=1.0,
+                     color=colour, label=name + " positions")
+    axes[1].axhline(background, color="black", lw=0.9, ls="--")
+    axes[1].text(len(files) - 0.4, background + 0.15, "receptor background",
+                 fontsize=6.5, ha="right")
+    axes[1].set_xticks(x)
+    axes[1].set_xticklabels([int(f.stem.split("seed")[-1]) for f in files], rotation=90)
     axes[1].set_xlabel("fine-tuning seed")
-    axes[1].set_ylabel("permutation P")
+    axes[1].set_ylabel("median distance to the\nligand in 8JSR (\u00c5)")
     panel(axes[1], "b")
-    fig.legend(*axes[0].get_legend_handles_labels(),
-               loc="outside lower center", ncol=2, frameon=False)
-    save(fig, "FigS9_label_permutation")
-    n_sig = sum(p < 0.05 for p in pvals)
-    print(f"     observed {np.mean(obs):.2f} Å, null median {np.median(np.concatenate(nulls)):.2f} Å")
-    print(f"     seeds significant at P < 0.05: {n_sig} of {len(files)}  (P values "
-          f"{min(pvals):.3f}-{max(pvals):.3f})")
+    h0, l0 = axes[0].get_legend_handles_labels()
+    h1, l1 = axes[1].get_legend_handles_labels()
+    fig.legend(h0 + h1, l0 + l1, loc="outside lower center", ncol=3, frameon=False)
+    save(fig, "FigS9_pocket_proximity")
+
+    for name in rows:
+        o = [v for v, _ in rows[name]]; pv = [v for _, v in rows[name]]
+        print(f"     {name:11s} median {min(o):.1f}-{max(o):.1f} \u00c5, "
+              f"median P = {np.median(pv):.4f}, all ten below background: "
+              f"{all(v < background for v in o)}")
+    print(f"     background {background:.1f} \u00c5")
 
 
 def figure_s10():
