@@ -1,0 +1,34 @@
+{
+  "features OFF, max over all atom rows (this work)": {
+    "R2_physicochemical_descriptors": 0.035,
+    "R2_amino_acid_identity": 0.26,
+    "between_type_share": 0.26,
+    "within_type_positional_share": 0.74,
+    "n_responder_residues": 179,
+    "n_residues_with_zero_delta": 165
+  },
+  "features OFF, max over real atoms": {
+    "R2_physicochemical_descriptors": 0.082,
+    "R2_amino_acid_identity": 0.401,
+    "between_type_share": 0.401,
+    "within_type_positional_share": 0.599,
+    "n_responder_residues": 302,
+    "n_residues_with_zero_delta": 0
+  },
+  "features ON, max over all atom rows": {
+    "R2_physicochemical_descriptors": 0.027,
+    "R2_amino_acid_identity": 0.125,
+    "between_type_share": 0.125,
+    "within_type_positional_share": 0.875,
+    "n_responder_residues": 209,
+    "n_residues_with_zero_delta": 234
+  },
+  "features ON, mean over real atoms": {
+    "R2_physicochemical_descriptors": 0.02,
+    "R2_amino_acid_identity": 0.123,
+    "between_type_share": 0.123,
+    "within_type_positional_share": 0.877,
+    "n_responder_residues": 302,
+    "n_residues_with_zero_delta": 0
+  }
+}

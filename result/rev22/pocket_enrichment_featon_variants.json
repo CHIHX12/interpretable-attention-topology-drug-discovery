@@ -1,0 +1,155 @@
+{
+  "features_off_max": {
+    "anova_r2_by_amino_acid": 0.2598208618931606,
+    "agonist_side": {
+      "residues": [
+        "C126",
+        "Y232",
+        "I300",
+        "Q299",
+        "P200",
+        "C198",
+        "V122",
+        "S123",
+        "S125",
+        "E124"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 6.92,
+        "background_median_A": 13.34,
+        "permutation_p": 0.014
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 6.12,
+        "background_median_A": 14.45,
+        "permutation_p": 0.004
+      }
+    },
+    "antagonist_side": {
+      "residues": [
+        "S287",
+        "F286",
+        "P278",
+        "F147",
+        "C116",
+        "Q302",
+        "P41",
+        "F38",
+        "P39",
+        "P292"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 8.31,
+        "background_median_A": 13.34,
+        "permutation_p": 0.0599
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 9.59,
+        "background_median_A": 14.45,
+        "permutation_p": 0.1299
+      }
+    }
+  },
+  "features_on_max": {
+    "anova_r2_by_amino_acid": 0.12532278044603218,
+    "agonist_side": {
+      "residues": [
+        "T201",
+        "W193",
+        "T76",
+        "T211",
+        "G236",
+        "R237",
+        "V139",
+        "R331",
+        "E124",
+        "E140"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 24.74,
+        "background_median_A": 13.34,
+        "permutation_p": 0.022
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 24.91,
+        "background_median_A": 14.45,
+        "permutation_p": 0.0759
+      }
+    },
+    "antagonist_side": {
+      "residues": [
+        "S88",
+        "S84",
+        "F87",
+        "M85",
+        "L90",
+        "I92",
+        "L91",
+        "A86",
+        "D89",
+        "S83"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 13.1,
+        "background_median_A": 13.34,
+        "permutation_p": 0.8152
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 12.97,
+        "background_median_A": 14.45,
+        "permutation_p": 0.6953
+      }
+    }
+  },
+  "features_on_masked_mean": {
+    "anova_r2_by_amino_acid": 0.12260054743958919,
+    "agonist_side": {
+      "residues": [
+        "Y303",
+        "L306",
+        "F309",
+        "N305",
+        "Y313",
+        "V307",
+        "I300",
+        "S301",
+        "S308",
+        "F312"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 5.34,
+        "background_median_A": 13.34,
+        "permutation_p": 0.002
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 5.87,
+        "background_median_A": 14.45,
+        "permutation_p": 0.002
+      }
+    },
+    "antagonist_side": {
+      "residues": [
+        "V154",
+        "V155",
+        "V153",
+        "T156",
+        "R159",
+        "V182",
+        "K152",
+        "V184",
+        "D191",
+        "V180"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 30.5,
+        "background_median_A": 13.34,
+        "permutation_p": 0.0
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 28.56,
+        "background_median_A": 14.45,
+        "permutation_p": 0.01
+      }
+    }
+  }
+}

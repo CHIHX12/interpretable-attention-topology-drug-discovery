@@ -1,0 +1,54 @@
+{
+  "compound_descriptors_off": {
+    "n_pairs": 5,
+    "mean_diff_auroc": 0.014432537260525758,
+    "sd_diff": 0.006005599365892179,
+    "paired_t_p": 0.005793068098087002
+  },
+  "compound_descriptors_on": {
+    "n_pairs": 5,
+    "mean_diff_auroc": 0.008102733264698814,
+    "sd_diff": 0.006729703407118351,
+    "paired_t_p": 0.054528794424674266
+  },
+  "random_descriptors_off": {
+    "n_pairs": 5,
+    "mean_diff_auroc": 0.014723926380368124,
+    "sd_diff": 0.010643505638650321,
+    "paired_t_p": 0.03645684177270049
+  },
+  "random_unpaired_descriptors_off": {
+    "pretrained_mean": 0.9755777796453483,
+    "pretrained_sd": 0.0019118150588974111,
+    "scratch_mean": 0.960421043785192,
+    "scratch_sd": 0.009871888954408388,
+    "welch_p": 0.02571522222027455,
+    "pretrained_cv_percent": 0.19596746653992192
+  },
+  "random_descriptors_on": {
+    "n_pairs": 5,
+    "mean_diff_auroc": 0.009265484494495357,
+    "sd_diff": 0.01296313801545861,
+    "paired_t_p": 0.18523199192535486
+  },
+  "random_unpaired_descriptors_on": {
+    "pretrained_mean": 0.9621837969577275,
+    "pretrained_sd": 0.003290124326663669,
+    "scratch_mean": 0.9521262290948819,
+    "scratch_sd": 0.009806242857261374,
+    "welch_p": 0.08257349455199753,
+    "pretrained_cv_percent": 0.3419434350346077
+  },
+  "scaffold_descriptors_off": {
+    "n_pairs": 5,
+    "mean_diff_auroc": 0.01882237379169851,
+    "sd_diff": 0.017085619691137678,
+    "paired_t_p": 0.0694398775373257
+  },
+  "scaffold_descriptors_on": {
+    "n_pairs": 5,
+    "mean_diff_auroc": 0.009691402289344708,
+    "sd_diff": 0.011636985959082895,
+    "paired_t_p": 0.13605028053314483
+  }
+}

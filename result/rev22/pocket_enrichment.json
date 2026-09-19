@@ -1,0 +1,206 @@
+{
+  "main_trained_and_read_without_descriptors": {
+    "anova_r2_by_amino_acid": 0.16205995436190315,
+    "agonist_side": {
+      "residues": [
+        "S88",
+        "I300",
+        "C227",
+        "V122",
+        "P200",
+        "S315",
+        "S125",
+        "E124",
+        "Q299",
+        "C126"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 8.09,
+        "background_median_A": 13.34,
+        "permutation_p": 0.046
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 8.32,
+        "background_median_A": 14.45,
+        "permutation_p": 0.026
+      }
+    },
+    "antagonist_side": {
+      "residues": [
+        "F286",
+        "S287",
+        "Q302",
+        "G293",
+        "L37",
+        "P292",
+        "P278",
+        "F38",
+        "S294",
+        "L223"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 7.24,
+        "background_median_A": 13.34,
+        "permutation_p": 0.018
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 8.84,
+        "background_median_A": 14.45,
+        "permutation_p": 0.0719
+      }
+    }
+  },
+  "read_without_descriptors_model_trained_with_them": {
+    "anova_r2_by_amino_acid": 0.2598208618931606,
+    "agonist_side": {
+      "residues": [
+        "C126",
+        "Y232",
+        "I300",
+        "Q299",
+        "P200",
+        "C198",
+        "V122",
+        "S123",
+        "S125",
+        "E124"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 6.92,
+        "background_median_A": 13.34,
+        "permutation_p": 0.014
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 6.12,
+        "background_median_A": 14.45,
+        "permutation_p": 0.002
+      }
+    },
+    "antagonist_side": {
+      "residues": [
+        "S287",
+        "F286",
+        "P278",
+        "F147",
+        "C116",
+        "Q302",
+        "P41",
+        "F38",
+        "P39",
+        "P292"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 8.31,
+        "background_median_A": 13.34,
+        "permutation_p": 0.04
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 9.59,
+        "background_median_A": 14.45,
+        "permutation_p": 0.1199
+      }
+    }
+  },
+  "descriptors_enabled_max": {
+    "anova_r2_by_amino_acid": 0.12532278044603218,
+    "agonist_side": {
+      "residues": [
+        "T201",
+        "W193",
+        "T76",
+        "T211",
+        "G236",
+        "R237",
+        "V139",
+        "R331",
+        "E124",
+        "E140"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 24.74,
+        "background_median_A": 13.34,
+        "permutation_p": 0.034
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 24.91,
+        "background_median_A": 14.45,
+        "permutation_p": 0.0719
+      }
+    },
+    "antagonist_side": {
+      "residues": [
+        "S88",
+        "S84",
+        "F87",
+        "M85",
+        "L90",
+        "I92",
+        "L91",
+        "A86",
+        "D89",
+        "S83"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 13.1,
+        "background_median_A": 13.34,
+        "permutation_p": 0.8372
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 12.97,
+        "background_median_A": 14.45,
+        "permutation_p": 0.6513
+      }
+    }
+  },
+  "descriptors_enabled_masked_mean": {
+    "anova_r2_by_amino_acid": 0.12260054743958919,
+    "agonist_side": {
+      "residues": [
+        "Y303",
+        "L306",
+        "F309",
+        "N305",
+        "Y313",
+        "V307",
+        "I300",
+        "S301",
+        "S308",
+        "F312"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 5.34,
+        "background_median_A": 13.34,
+        "permutation_p": 0.004
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 5.87,
+        "background_median_A": 14.45,
+        "permutation_p": 0.002
+      }
+    },
+    "antagonist_side": {
+      "residues": [
+        "V154",
+        "V155",
+        "V153",
+        "T156",
+        "R159",
+        "V182",
+        "K152",
+        "V184",
+        "D191",
+        "V180"
+      ],
+      "8JSR agonist": {
+        "median_distance_A": 30.5,
+        "background_median_A": 13.34,
+        "permutation_p": 0.002
+      },
+      "6KO5 antagonist": {
+        "median_distance_A": 28.56,
+        "background_median_A": 14.45,
+        "permutation_p": 0.016
+      }
+    }
+  }
+}

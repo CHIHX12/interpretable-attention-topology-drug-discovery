@@ -1,0 +1,32 @@
+{
+  "n_train": 1077,
+  "class_counts_train": {
+    "1": 543,
+    "0": 534
+  },
+  "n_val": 153,
+  "class_counts_val": {
+    "0": 77,
+    "1": 76
+  },
+  "n_test": 309,
+  "class_counts_test": {
+    "0": 165,
+    "1": 144
+  },
+  "exact_smiles_overlap_train_val": 0,
+  "canonical_smiles_overlap_train_val": 0,
+  "exact_smiles_overlap_train_test": 0,
+  "canonical_smiles_overlap_train_test": 0,
+  "exact_smiles_overlap_val_test": 0,
+  "canonical_smiles_overlap_val_test": 0,
+  "test_to_train_nn_tanimoto": {
+    "mean": 0.8005000841639923,
+    "median": 0.8073549257759784,
+    "frac_ge_0.8": 0.5472972972972973,
+    "frac_lt_0.4": 0.006756756756756757,
+    "n_test_ligands": 296
+  },
+  "n_test_scaffolds_seen_in_train": 86,
+  "n_test_scaffolds": 188
+}

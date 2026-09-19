@@ -36,6 +36,21 @@ result/
 *.ckpt
 models/
 
+# Exception: the small result tables the manuscript cites by path. These are
+# analysis outputs, not parameters, and Referee 1 asked for the intermediate
+# tables and expected outputs (checklist 6b). The attention arrays (~300 MB)
+# and every checkpoint stay excluded by the rules above.
+!result/
+result/*
+!result/rev22/
+result/rev22/*
+!result/rev22/*.csv
+!result/rev22/*.json
+
+# Peer-review correspondence is confidential and is never published here.
+文章草稿/
+
+
 # Large data files (download separately — see datasets/README.md)
 datasets/bindingdb/
 datasets/biosnap/
@@ -107,3 +122,5 @@ selfies_vocab.pkl
 # Temporary files
 *.tmp
 *.temp
+# stray empty file, not part of the project
+新增 文字文件.txt

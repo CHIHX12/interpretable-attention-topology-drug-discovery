@@ -1,0 +1,521 @@
+{
+  "n_rows": 1539,
+  "n_unique_exact_smiles": 1430,
+  "n_unique_canonical_smiles": 1430,
+  "n_dual_endpoint_ligands": 109,
+  "n_scaffolds": 623,
+  "splits": {
+    "random": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "0": 541,
+        "1": 536
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "1": 81,
+        "0": 72
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "0": 163,
+        "1": 146
+      },
+      "exact_smiles_overlap_train_val": 15,
+      "canonical_smiles_overlap_train_val": 15,
+      "exact_smiles_overlap_train_test": 24,
+      "canonical_smiles_overlap_train_test": 24,
+      "exact_smiles_overlap_val_test": 6,
+      "canonical_smiles_overlap_val_test": 6,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.8224548795730027,
+        "median": 0.8343137254901961,
+        "frac_ge_0.8": 0.6390728476821192,
+        "frac_lt_0.4": 0.006622516556291391,
+        "n_test_ligands": 302
+      },
+      "n_test_scaffolds_seen_in_train": 116,
+      "n_test_scaffolds": 215
+    },
+    "rev22_compound_s0": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "0": 556,
+        "1": 521
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "1": 83,
+        "0": 70
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "1": 159,
+        "0": 150
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.813454932355874,
+        "median": 0.819672131147541,
+        "frac_ge_0.8": 0.5979381443298969,
+        "frac_lt_0.4": 0.003436426116838488,
+        "n_test_ligands": 291
+      },
+      "n_test_scaffolds_seen_in_train": 92,
+      "n_test_scaffolds": 190
+    },
+    "rev22_scaffold_s0": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "1": 574,
+        "0": 503
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "0": 97,
+        "1": 56
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "0": 176,
+        "1": 133
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.7432355854120191,
+        "median": 0.7458972289480764,
+        "frac_ge_0.8": 0.2604166666666667,
+        "frac_lt_0.4": 0.010416666666666666,
+        "n_test_ligands": 288
+      },
+      "n_test_scaffolds_seen_in_train": 0,
+      "n_test_scaffolds": 108
+    },
+    "rev22_nodual_s0": {
+      "n_train": 924,
+      "class_counts_train": {
+        "0": 467,
+        "1": 457
+      },
+      "n_val": 132,
+      "class_counts_val": {
+        "1": 70,
+        "0": 62
+      },
+      "n_test": 265,
+      "class_counts_test": {
+        "0": 138,
+        "1": 127
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.8123400397322911,
+        "median": 0.82,
+        "frac_ge_0.8": 0.5886792452830188,
+        "frac_lt_0.4": 0.007547169811320755,
+        "n_test_ligands": 265
+      },
+      "n_test_scaffolds_seen_in_train": 90,
+      "n_test_scaffolds": 185
+    },
+    "rev22_compound_s1": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "1": 549,
+        "0": 528
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "0": 82,
+        "1": 71
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "0": 166,
+        "1": 143
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.8041966443533033,
+        "median": 0.8157894736842105,
+        "frac_ge_0.8": 0.5859649122807018,
+        "frac_lt_0.4": 0.0,
+        "n_test_ligands": 285
+      },
+      "n_test_scaffolds_seen_in_train": 98,
+      "n_test_scaffolds": 188
+    },
+    "rev22_scaffold_s1": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "0": 552,
+        "1": 525
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "1": 91,
+        "0": 62
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "0": 162,
+        "1": 147
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.7075454648544864,
+        "median": 0.7233968563082487,
+        "frac_ge_0.8": 0.22945205479452055,
+        "frac_lt_0.4": 0.030821917808219176,
+        "n_test_ligands": 292
+      },
+      "n_test_scaffolds_seen_in_train": 0,
+      "n_test_scaffolds": 118
+    },
+    "rev22_nodual_s1": {
+      "n_train": 924,
+      "class_counts_train": {
+        "0": 463,
+        "1": 461
+      },
+      "n_val": 132,
+      "class_counts_val": {
+        "0": 70,
+        "1": 62
+      },
+      "n_test": 265,
+      "class_counts_test": {
+        "0": 134,
+        "1": 131
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.794680233674857,
+        "median": 0.8076923076923077,
+        "frac_ge_0.8": 0.5584905660377358,
+        "frac_lt_0.4": 0.018867924528301886,
+        "n_test_ligands": 265
+      },
+      "n_test_scaffolds_seen_in_train": 95,
+      "n_test_scaffolds": 184
+    },
+    "rev22_compound_s2": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "1": 543,
+        "0": 534
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "0": 77,
+        "1": 76
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "0": 165,
+        "1": 144
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.8005000841639923,
+        "median": 0.8073549257759784,
+        "frac_ge_0.8": 0.5472972972972973,
+        "frac_lt_0.4": 0.006756756756756757,
+        "n_test_ligands": 296
+      },
+      "n_test_scaffolds_seen_in_train": 86,
+      "n_test_scaffolds": 188
+    },
+    "rev22_scaffold_s2": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "1": 542,
+        "0": 535
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "0": 90,
+        "1": 63
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "1": 158,
+        "0": 151
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.7287125338522256,
+        "median": 0.7384615384615385,
+        "frac_ge_0.8": 0.24567474048442905,
+        "frac_lt_0.4": 0.010380622837370242,
+        "n_test_ligands": 289
+      },
+      "n_test_scaffolds_seen_in_train": 0,
+      "n_test_scaffolds": 132
+    },
+    "rev22_nodual_s2": {
+      "n_train": 924,
+      "class_counts_train": {
+        "0": 466,
+        "1": 458
+      },
+      "n_val": 132,
+      "class_counts_val": {
+        "0": 66,
+        "1": 66
+      },
+      "n_test": 265,
+      "class_counts_test": {
+        "0": 135,
+        "1": 130
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.8110399965440297,
+        "median": 0.8225806451612904,
+        "frac_ge_0.8": 0.6,
+        "frac_lt_0.4": 0.007547169811320755,
+        "n_test_ligands": 265
+      },
+      "n_test_scaffolds_seen_in_train": 93,
+      "n_test_scaffolds": 174
+    },
+    "rev22_compound_s3": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "0": 542,
+        "1": 535
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "1": 83,
+        "0": 70
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "0": 164,
+        "1": 145
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.8075119746565849,
+        "median": 0.8153846153846154,
+        "frac_ge_0.8": 0.5653710247349824,
+        "frac_lt_0.4": 0.007067137809187279,
+        "n_test_ligands": 283
+      },
+      "n_test_scaffolds_seen_in_train": 85,
+      "n_test_scaffolds": 176
+    },
+    "rev22_scaffold_s3": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "0": 568,
+        "1": 509
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "1": 90,
+        "0": 63
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "1": 164,
+        "0": 145
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.6983884858263008,
+        "median": 0.7391304347826086,
+        "frac_ge_0.8": 0.2724014336917563,
+        "frac_lt_0.4": 0.03942652329749104,
+        "n_test_ligands": 279
+      },
+      "n_test_scaffolds_seen_in_train": 0,
+      "n_test_scaffolds": 105
+    },
+    "rev22_nodual_s3": {
+      "n_train": 924,
+      "class_counts_train": {
+        "0": 483,
+        "1": 441
+      },
+      "n_val": 132,
+      "class_counts_val": {
+        "1": 72,
+        "0": 60
+      },
+      "n_test": 265,
+      "class_counts_test": {
+        "1": 141,
+        "0": 124
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.8021705210255631,
+        "median": 0.8142857142857143,
+        "frac_ge_0.8": 0.5849056603773585,
+        "frac_lt_0.4": 0.0,
+        "n_test_ligands": 265
+      },
+      "n_test_scaffolds_seen_in_train": 92,
+      "n_test_scaffolds": 165
+    },
+    "rev22_compound_s4": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "0": 554,
+        "1": 523
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "0": 79,
+        "1": 74
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "1": 166,
+        "0": 143
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.8028384906586421,
+        "median": 0.8133333333333334,
+        "frac_ge_0.8": 0.5314685314685315,
+        "frac_lt_0.4": 0.01048951048951049,
+        "n_test_ligands": 286
+      },
+      "n_test_scaffolds_seen_in_train": 99,
+      "n_test_scaffolds": 183
+    },
+    "rev22_scaffold_s4": {
+      "n_train": 1077,
+      "class_counts_train": {
+        "0": 541,
+        "1": 536
+      },
+      "n_val": 153,
+      "class_counts_val": {
+        "1": 77,
+        "0": 76
+      },
+      "n_test": 309,
+      "class_counts_test": {
+        "0": 159,
+        "1": 150
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.7618432919160256,
+        "median": 0.7777777777777778,
+        "frac_ge_0.8": 0.4206896551724138,
+        "frac_lt_0.4": 0.0034482758620689655,
+        "n_test_ligands": 290
+      },
+      "n_test_scaffolds_seen_in_train": 0,
+      "n_test_scaffolds": 140
+    },
+    "rev22_nodual_s4": {
+      "n_train": 924,
+      "class_counts_train": {
+        "0": 476,
+        "1": 448
+      },
+      "n_val": 132,
+      "class_counts_val": {
+        "0": 71,
+        "1": 61
+      },
+      "n_test": 265,
+      "class_counts_test": {
+        "1": 145,
+        "0": 120
+      },
+      "exact_smiles_overlap_train_val": 0,
+      "canonical_smiles_overlap_train_val": 0,
+      "exact_smiles_overlap_train_test": 0,
+      "canonical_smiles_overlap_train_test": 0,
+      "exact_smiles_overlap_val_test": 0,
+      "canonical_smiles_overlap_val_test": 0,
+      "test_to_train_nn_tanimoto": {
+        "mean": 0.7923801152029657,
+        "median": 0.8076923076923077,
+        "frac_ge_0.8": 0.5283018867924528,
+        "frac_lt_0.4": 0.011320754716981131,
+        "n_test_ligands": 265
+      },
+      "n_test_scaffolds_seen_in_train": 85,
+      "n_test_scaffolds": 181
+    }
+  }
+}
