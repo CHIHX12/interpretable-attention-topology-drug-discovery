@@ -19,7 +19,7 @@ python anm_tm6_direction.py
 | `6ko5.pdb` | antagonist-bound GHSR, the resting reference for the network |
 | `8jsr.pdb` | agonist-bound GHSR (anamorelin) |
 | `7f83.pdb` | inverse-agonist-bound GHSR |
-| `_data_compact.json` | the contact network built from 6KO5: 293 nodes, 1,590 edges, `k = 1/d` for minimum heavy-atom distances below 5 Å |
+| `_data_compact.json` | the contact network built from 6KO5: 293 nodes, 1,590 edges, `k = 1/d` for minimum heavy-atom distances below 5 Å. The analysis network is the per-node `neighbors` field, which holds all 1,590 edges with mean `k` = 0.354. The separate `edges` array in the same file holds 1,299 entries and is a reduced export for the HTML animation only; no analysis reads it. |
 | `_anm_cache.npz` | intermediate ANM modes, rewritten by `anm_tm6_direction.py` |
 
 ## Scripts and what they report
