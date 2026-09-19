@@ -87,15 +87,19 @@ def figure3():
     summary = pd.read_csv("result/rev22/summary_table.csv")
     splits = json.loads(Path("datasets/GPCR_resarch/rev22_split_summary.json").read_text())
 
-    fig, axes = plt.subplots(1, 3, figsize=(11.5, 3.7))
+    # authored at the double-column width (17.1 cm) so that no rescaling
+    # happens at typesetting and the type sizes here are the printed ones
+    fig, axes = plt.subplots(1, 3, figsize=(6.73, 3.5),
+                             gridspec_kw={'width_ratios': [0.70, 1.30, 1.14]})
 
     # (a) composition
     ax = axes[0]
     n1, n0 = int((df.Y == 1).sum()), int((df.Y == 0).sum())
-    ax.pie([n1, n0], labels=[f"EC50-derived\nn = {n1}", f"IC50-derived\nn = {n0}"],
+    ax.pie([n1, n0], labels=[f"EC50\nn = {n1}", f"IC50\nn = {n0}"],
            colors=[RED, BLUE], autopct="%1.1f%%", startangle=90,
-           wedgeprops={"edgecolor": "white", "linewidth": 1.2},
-           textprops={"color": "black"})
+           radius=1.30, labeldistance=1.16, pctdistance=0.55,
+           wedgeprops={"edgecolor": "white", "linewidth": 1.0},
+           textprops={"color": "black", "fontsize": 7})
     panel_label(ax, "(a)", x=-0.02)
 
     # (b) performance per partition family
@@ -115,11 +119,12 @@ def figure3():
         e = [0 if not len(v) or np.isnan(v[0]) else v[0] for v in e]
         ax.bar(x + (i - 1.5) * w, m, w, yerr=e, capsize=2, label=lab, color=col,
                edgecolor="black", linewidth=0.4)
-    ax.set_xticks(x); ax.set_xticklabels(labels)
-    ax.set_ylim(0.9, 1.0); ax.set_ylabel("test AUROC")
-    ax.legend(fontsize=7, frameon=False, loc="upper center",
-              bbox_to_anchor=(0.5, -0.17), ncol=2, columnspacing=1.4,
-              handlelength=1.4, handletextpad=0.6)
+    ax.set_xticks(x); ax.set_xticklabels(labels, fontsize=7)
+    ax.tick_params(axis="y", labelsize=7)
+    ax.set_ylim(0.9, 1.0); ax.set_ylabel("test AUROC", fontsize=8)
+    ax.legend(fontsize=6.4, frameon=False, loc="upper center",
+              bbox_to_anchor=(0.5, -0.20), ncol=2, columnspacing=1.0,
+              handlelength=1.1, handletextpad=0.45)
     panel_label(ax, "(b)")
 
     # (c) chemotype novelty: per-ligand nearest-neighbour similarity to training
@@ -141,10 +146,11 @@ def figure3():
                          for s in te.SMILES.unique()])
         xs = np.sort(sims)
         ax.plot(xs, np.arange(1, len(xs) + 1) / len(xs), color=colour, lw=1.6, label=label)
-    ax.set_xlabel("nearest-neighbour ECFP4 Tanimoto\nfrom each test ligand to the training set")
-    ax.set_ylabel("cumulative fraction of test ligands")
+    ax.set_xlabel("nearest-neighbour ECFP4\nTanimoto to training set", fontsize=7.5)
+    ax.set_ylabel("cumulative fraction of test ligands", fontsize=7.5)
     ax.set_xlim(0, 1); ax.set_ylim(0, 1)
-    ax.legend(fontsize=7, frameon=False, loc="upper left")
+    ax.tick_params(labelsize=7)
+    ax.legend(fontsize=6.4, frameon=False, loc="upper left", handlelength=1.2)
     panel_label(ax, "(c)")
     save(fig, "Fig3_data_and_performance")
 
@@ -208,7 +214,7 @@ def figure5():
     df = pd.read_csv("datasets/GPCR_resarch/GHSR_training_data.csv")
     seq = df.Protein.iloc[0]
     pairs = pairing("result/rev22/attention/featoff_seed42.npz")
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(6.73, 3.5))
     for ax, (side, label) in zip(axes, [("EC50", "(a)"), ("IC50", "(b)")]):
         share = {}
         for t, c in pairs[side]:
@@ -222,9 +228,9 @@ def figure5():
             for k, c in enumerate(nodes):
                 ang = 2 * np.pi * k / max(1, len(nodes)) + 0.3 * level
                 x, y = radius * np.cos(ang), radius * np.sin(ang)
-                ax.plot(x, y, "o", color=lc, ms=7, markeredgecolor="black", markeredgewidth=0.4)
-                ax.text(x, y + 0.075, f"{seq[c - OFFSET]}{c}", ha="center", fontsize=7)
-        ax.set_xlim(-1.25, 1.25); ax.set_ylim(-1.25, 1.25); ax.axis("off")
+                ax.plot(x, y, "o", color=lc, ms=4.5, markeredgecolor="black", markeredgewidth=0.35)
+                ax.text(x, y + 0.085, f"{seq[c - OFFSET]}{c}", ha="center", fontsize=6.2)
+        ax.set_xlim(-1.32, 1.32); ax.set_ylim(-1.32, 1.32); ax.axis("off")
         panel_label(ax, label, x=0.0, y=0.98)
     save(fig, "Fig5_pairing_network")
 
