@@ -72,7 +72,7 @@ positions, and the saved arrays cover the 523 real positions.
 | Command | Produces |
 |---|---|
 | `python revision/table1_rev22.py` | Table 1, and `result/rev22/table1_residues.csv` for all 302 residues |
-| `python revision/table2_pairing.py` | Table 2, and the per-seed values behind it |
+| `python revision/table2_pairing.py` | Table 2, the per-seed values behind it, and the fifty selected pairs per seed (Supplementary Table 3) |
 | `python revision/attention_probe.py` | the linear probe on the attention profile (SI 5.1) |
 | `python revision/feature_dependence.py` | how much of Δ the four descriptors explain (SI 5.1) |
 | `python revision/pocket_enrichment.py` | proximity to the ligand against two null models (SI 5.1) |
@@ -82,7 +82,7 @@ positions, and the saved arrays cover the 523 real positions.
 `table2_pairing.py` is the step Referee 1 could not find. It applies the rule of
 Section 2.6 — constitutive pool `|Δ| < 0.1` and `I > 1.5`, five partners per
 target by the smallest importance gap, target excluded from its own pool — over
-the ten fine-tuning seeds, and reproduces every value of Table 2.
+the ten fine-tuning seeds, and reproduces every value of Table 2. It also writes the fifty pairs themselves, `table2_pairs_seed<NN>.csv`, which supersede the `exact_five_*_25pairs.csv` tables the reviewer could not trace.
 
 ## 6. Elastic network
 

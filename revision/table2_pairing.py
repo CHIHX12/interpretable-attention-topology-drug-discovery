@@ -13,7 +13,12 @@ residues listed in Table 1.
 Every value is a mean +/- SD over the ten fine-tuning seeds, except the pool
 size, which is reported as a range.
 
-Output: result/rev22/table2_pairing.csv, and the per-seed values alongside it.
+Outputs, all under result/rev22/:
+    table2_pairing.csv          the summary that is Table 2
+    table2_pairing_per_seed.csv the per-seed values behind it
+    table2_pairs_seed<NN>.csv   the fifty selected pairs per seed, which is the
+                                per-pair table of Supplementary Table 3 and the
+                                successor of the previous exact_five_*_25pairs.csv
 
 Usage:
     python revision/table2_pairing.py
@@ -25,16 +30,43 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+DATA = "datasets/GPCR_resarch/GHSR_training_data.csv"
+
 FIRST, LAST, OFFSET = 37, 338, 2
 DELTA_MAX, IMP_MIN, N_PARTNERS = 0.1, 1.5, 5
 TARGETS = {"EC50": [124, 125, 122, 198, 200],
            "IC50": [287, 286, 278, 147, 116]}
 
 
+SEQ = pd.read_csv(DATA).Protein.iloc[0]
+
+
 def partners(imp, pool, target, pos):
     """The N_PARTNERS pool members closest to the target in importance."""
     return sorted((c for c in pool if c != target),
                   key=lambda c: abs(imp[pos[target]] - imp[pos[c]]))[:N_PARTNERS]
+
+
+def seed_pairs(imp, pool, targets, pos, resn, seq):
+    """The fifty selected pairs of one seed, as rows."""
+    rows = []
+    for side, ts in targets.items():
+        chosen = {t: partners(imp, pool, t, pos) for t in ts}
+        used = {}
+        for t, cs in chosen.items():
+            for c in cs:
+                used.setdefault(c, set()).add(t)
+        for t, cs in chosen.items():
+            for rank, c in enumerate(cs, 1):
+                rows.append({"direction": side,
+                             "target": f"{seq[t - OFFSET]}{t}", "target_resnum": t,
+                             "partner": f"{seq[c - OFFSET]}{c}", "partner_resnum": c,
+                             "rank": rank,
+                             "I_target": float(imp[pos[t]]),
+                             "I_partner": float(imp[pos[c]]),
+                             "dImp": float(abs(imp[pos[t]] - imp[pos[c]])),
+                             "U_c": len(used[c])})
+    return rows
 
 
 def seed_metrics(path):
@@ -49,6 +81,7 @@ def seed_metrics(path):
             if abs(delta[pos[r]]) < DELTA_MAX and imp[pos[r]] > IMP_MIN]
 
     row = {"file": Path(path).name, "pool": len(pool)}
+    row["_pairs"] = seed_pairs(imp, pool, TARGETS, pos, resn, SEQ)
     for side, targets in TARGETS.items():
         chosen = {t: partners(imp, pool, t, pos) for t in targets}
         gaps = [abs(imp[pos[t]] - imp[pos[c]]) for t, cs in chosen.items() for c in cs]
@@ -72,7 +105,14 @@ def main():
     ap.add_argument("--out", default="result/rev22/table2_pairing.csv")
     args = ap.parse_args()
 
-    per_seed = pd.DataFrame([seed_metrics(f) for f in args.att])
+    records = [seed_metrics(f) for f in args.att]
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    for rec, f in zip(records, args.att):
+        seed = Path(f).stem.split("seed")[-1]
+        pd.DataFrame(rec.pop("_pairs")).to_csv(
+            out.with_name(f"table2_pairs_seed{seed}.csv"), index=False)
+    per_seed = pd.DataFrame(records)
     metrics = [c for c in per_seed.columns if c not in ("file", "pool")]
     summary = pd.DataFrame({
         "metric": metrics,
@@ -83,15 +123,14 @@ def main():
     })
     smaller = int((per_seed.gap_mean_EC50 < per_seed.gap_mean_IC50).sum())
 
-    out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
     summary.to_csv(out, index=False)
     per_seed.to_csv(out.with_name(out.stem + "_per_seed.csv"), index=False)
 
     print(summary.round(4).to_string(index=False))
     print(f"\nconstitutive pool: {per_seed['pool'].min()}-{per_seed['pool'].max()} residues")
     print(f"seeds in which the EC50 side has the smaller gap: {smaller} of {len(per_seed)}")
-    print(f"saved {out} and {out.with_name(out.stem + '_per_seed.csv')}")
+    print(f"saved {out}, {out.with_name(out.stem + '_per_seed.csv')}, "
+          f"and {len(records)} per-seed pair tables")
 
 
 if __name__ == "__main__":
