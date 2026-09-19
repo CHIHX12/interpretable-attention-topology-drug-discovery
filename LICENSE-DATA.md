@@ -10,7 +10,7 @@ set of terms. Read the table before reusing anything.
 | `datasets/biosnap/`, `datasets/human/` | See upstream | Redistributed via DrugBAN; consult the original sources. |
 | Figures and analysis outputs (`Important_Analysis/`, `result/`) | **CC BY-NC 4.0** | Our own creative work, generated from model outputs. |
 | Source code | PolyForm Noncommercial 1.0.0 | See [`LICENSE.md`](LICENSE.md) |
-| Model parameters | Request-based, noncommercial | See [`MODEL-WEIGHTS-TERMS.md`](MODEL-WEIGHTS-TERMS.md) |
+| Model parameters | **CC BY-NC 4.0**, open deposit at [doi:10.5281/zenodo.22841754](https://doi.org/10.5281/zenodo.22841754) | See [`MODEL-WEIGHTS-TERMS.md`](MODEL-WEIGHTS-TERMS.md) |
 
 ---
 

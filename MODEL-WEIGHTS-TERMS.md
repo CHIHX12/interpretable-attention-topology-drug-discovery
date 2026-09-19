@@ -2,11 +2,13 @@
 
 **The trained model parameters ("weights") for TEMA-ENM are not distributed in
 this repository and are not covered by [`LICENSE.md`](LICENSE.md).** They are
-made available on request under the terms below.
+deposited openly at [doi:10.5281/zenodo.22841754](https://doi.org/10.5281/zenodo.22841754) under CC BY-NC 4.0,
+with the additional terms below. No request to the authors is needed.
 
-This follows the access model used for AlphaFold 3: the source code is open for
-inspection and academic reproduction, while the trained parameters are granted
-per-request and restricted to noncommercial use.
+They are kept out of this repository for a licensing reason rather than an
+access one: the curated GHSR dataset inherits a ShareAlike obligation from
+ChEMBL and cannot carry a NonCommercial term, so the two cannot sit under one
+licence in one place.
 
 ---
 
@@ -14,8 +16,8 @@ per-request and restricted to noncommercial use.
 
 | Artifact | Description | Availability |
 |----------|-------------|--------------|
-| `DrugBAN_BiLSTM_BindingDB_epoch94.pth` | BiLSTM-BAN base model, pre-trained on BindingDB | On request |
-| `DrugBAN_BiLSTM_GHSR_epoch36.pth` | TEMA-ENM, fine-tuned on GHSR (val AUROC 0.9621) | On request |
+| `DrugBAN_BiLSTM_BindingDB_epoch94.pth` | BiLSTM-BAN base model, pre-trained on BindingDB | Open deposit |
+| `DrugBAN_BiLSTM_GHSR_epoch36.pth` | TEMA-ENM, fine-tuned on GHSR (val AUROC 0.9621) | Open deposit |
 
 ---
 

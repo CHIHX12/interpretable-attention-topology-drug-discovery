@@ -28,8 +28,8 @@ venv/
 ENV/
 
 # PyTorch model checkpoints — NEVER tracked.
-# Trained parameters are distributed on request under MODEL-WEIGHTS-TERMS.md,
-# not through this repository. Do not add exceptions here.
+# Trained parameters are deposited at doi:10.5281/zenodo.22841754
+# under MODEL-WEIGHTS-TERMS.md, not through this repository. No exceptions here.
 result/
 *.pth
 *.pt

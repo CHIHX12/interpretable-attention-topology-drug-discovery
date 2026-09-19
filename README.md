@@ -138,8 +138,9 @@ python split_ghsr_data.py --input datasets/GPCR_resarch/GHSR_training_data.csv \
 
 ### One-command reproduce (recommended)
 
-All data is included in the repository. **Trained model parameters are distributed
-separately on request** — see [Model parameters](#model-parameters) below.
+All data is included in the repository. **Trained model parameters are deposited
+separately at [doi:10.5281/zenodo.22841754](https://doi.org/10.5281/zenodo.22841754)** — see
+[Model parameters](#model-parameters) below.
 
 ```bash
 # Clone and set up environment
@@ -162,17 +163,24 @@ bash reproduce.sh --retrain
 
 ### Model parameters
 
-**Trained parameters are not distributed in this repository.** They are available
-on request for noncommercial use, under the terms in
-[`MODEL-WEIGHTS-TERMS.md`](MODEL-WEIGHTS-TERMS.md). Academic requests are normally
-granted; reviewers and editors are provided a private link on request.
+**Trained parameters are deposited openly at [doi:10.5281/zenodo.22841754](https://doi.org/10.5281/zenodo.22841754)**,
+under CC BY-NC 4.0 with the additional terms in
+[`MODEL-WEIGHTS-TERMS.md`](MODEL-WEIGHTS-TERMS.md). No request to the authors is
+needed. That deposit holds the pre-trained backbone and all ten GHSR fine-tuned
+checkpoints (seeds 42-51) with their per-seed epochs, test metrics and md5
+checksums.
+
+They live outside this repository for a licensing reason, not an access one: the
+curated GHSR dataset inherits a ShareAlike obligation from ChEMBL and cannot
+carry a NonCommercial term, so the two cannot sit under one licence in one
+place. See [`LICENSE-DATA.md`](LICENSE-DATA.md).
 
 | Expected path | Description | Val AUROC |
 |---------------|-------------|-----------|
 | `models/pretrained/DrugBAN_BiLSTM_BindingDB_epoch94.pth` | **BiLSTM-BAN base model** — pre-trained on BindingDB (binary binding, 50 epochs, best val); see [bioRxiv 2026](https://doi.org/10.64898/2026.05.10.724184) | — |
 | `models/finetuned/DrugBAN_BiLSTM_GHSR_epoch36.pth` | **TEMA-ENM** — fine-tuned on GHSR, best epoch out of 50 total | **0.9621** |
 
-Place granted files at the paths above. Everything in this repository other than
+Download the files from the deposit and place them at the paths above. Everything in this repository other than
 the parameters is sufficient to retrain from scratch with `bash reproduce.sh --retrain`.
 
 > **Training strategy**: the trainer runs for the full `MAX_EPOCH` (50) and saves the epoch with the best validation metric (val loss for multitask, AUROC for single-task). There is no early stopping — overfitting is prevented by selecting the best checkpoint rather than stopping training early.
