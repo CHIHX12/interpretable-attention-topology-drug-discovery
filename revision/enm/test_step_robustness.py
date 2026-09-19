@@ -16,6 +16,24 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+# --- submission figure convention -------------------------------------------
+# Panels carry a letter only. All descriptive wording lives in the figure
+# legend of the Supplementary Information. Figures are drawn at the printed
+# double-column width so the type sizes here are the printed ones.
+import matplotlib as _mpl
+_mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
+                      "xtick.labelsize": 6.5, "ytick.labelsize": 7,
+                      "legend.fontsize": 7, "axes.linewidth": 0.7,
+                      "lines.linewidth": 1.0, "savefig.dpi": 1200})
+SI_WIDTH = 6.73
+
+
+def _panel(ax, letter):
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+            fontweight="bold", ha="left", va="bottom")
+# ----------------------------------------------------------------------------
+
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ACTIVE = [124, 122, 125, 198, 200]
 INACTIVE = [287, 286, 278, 147, 116]
@@ -83,7 +101,7 @@ plt.rcParams.update({
     "xtick.labelsize": 13, "ytick.labelsize": 13, "legend.fontsize": 12,
     "mathtext.default": "regular",
 })
-fig, (axA, axB) = plt.subplots(1, 2, figsize=(17, 7.5), constrained_layout=True)
+fig, (axA, axB) = plt.subplots(1, 2, figsize=(SI_WIDTH, 2.97), constrained_layout=True)
 
 # Panel A: Spearman rho vs step count
 xs = list(CHECKPOINTS)
@@ -100,7 +118,7 @@ axA.set_xticks(xs); axA.set_xticklabels([str(s) for s in xs])
 axA.set_ylim(0.72, 1.01)
 axA.set_xlabel("Integration steps")
 axA.set_ylabel("Spearman ρ  (293-residue ranking vs 300-step)")
-axA.set_title("(A)  Ranking is robust to step count", loc="left", fontweight="bold")
+_panel(axA, "a")
 axA.grid(alpha=0.3)
 axA.spines[["top", "right"]].set_visible(False)
 
@@ -131,17 +149,13 @@ axB.set_xscale("log"); axB.set_yscale("log")
 axB.set_xticks(xs); axB.set_xticklabels([str(s) for s in xs])
 axB.set_xlabel("Integration steps")
 axB.set_ylabel("R (log scale)")
-axB.set_title("(B)  Direction is robust: Active stay >1, Inactive stay <1",
-              loc="left", fontweight="bold")
+_panel(axB, "b")
 axB.grid(alpha=0.3, which="both")
 axB.spines[["top", "right"]].set_visible(False)
 axB.legend(handles=[
-    plt.Line2D([0], [0], color="#E8731C", marker="o", lw=2, label="Active hub"),
-    plt.Line2D([0], [0], color="#1F6FBF", marker="s", lw=2, label="Inactive hub"),
-], loc="center left")
-
-fig.suptitle("Step-count robustness: R magnitudes drift, but ranking & direction hold",
-             fontsize=18, fontweight="bold")
+    plt.Line2D([0], [0], color="#C62828", marker="o", lw=1.2, label="Active hub"),
+    plt.Line2D([0], [0], color="#1F6FBF", marker="s", lw=1.2, label="Inactive hub"),
+], loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2, frameon=False)
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS1_enm_step_robustness.{ext}")
     fig.savefig(out, dpi=600, facecolor="white")

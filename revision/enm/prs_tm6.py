@@ -25,6 +25,24 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+# --- submission figure convention -------------------------------------------
+# Panels carry a letter only. All descriptive wording lives in the figure
+# legend of the Supplementary Information. Figures are drawn at the printed
+# double-column width so the type sizes here are the printed ones.
+import matplotlib as _mpl
+_mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
+                      "xtick.labelsize": 6.5, "ytick.labelsize": 7,
+                      "legend.fontsize": 7, "axes.linewidth": 0.7,
+                      "lines.linewidth": 1.0, "savefig.dpi": 1200})
+SI_WIDTH = 6.73
+
+
+def _panel(ax, letter):
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+            fontweight="bold", ha="left", va="bottom")
+# ----------------------------------------------------------------------------
+
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 TM6 = list(range(261, 293))
 with open(os.path.join(SCRIPT_DIR, "_data_compact.json")) as f:
@@ -108,7 +126,7 @@ plt.rcParams.update({
     "axes.titlesize": 16, "axes.labelsize": 15,
     "xtick.labelsize": 11, "ytick.labelsize": 13,
 })
-fig, ax = plt.subplots(figsize=(15, 7))
+fig, ax = plt.subplots(figsize=(SI_WIDTH, 3.14))
 fig.subplots_adjust(top=0.86, bottom=0.16, left=0.08, right=0.97)
 xa = np.arange(len(TM6))
 ax.bar(xa, radvals, color=["#C62828" if v > 0 else "#1F6FBF" for v in radvals],
@@ -121,13 +139,8 @@ for rr, lbl in [(272, "F272 (push)"), (276, "W276"), (283, "R283")]:
 ax.set_xticks(xa); ax.set_xticklabels([str(r) for r in TM6], rotation=90)
 ax.set_ylabel("TM6 radial response (normalized)\n+ outward / − inward")
 ax.set_xlabel("TM6 residue number")
-ax.set_title("(A)  PRS — push F272 toward P224: how each TM6 residue responds",
-             loc="left", fontweight="bold")
+_panel(ax, "a")
 ax.spines[["top", "right"]].set_visible(False)
-ax.text(0.5, 1.06, "Force applied at F272 pointed at P5.50 (P224); displacement from ANM (Δr = H⁻¹F). "
-        "Linear elastic prediction, not MD.", transform=ax.transAxes, ha="center",
-        fontsize=11, style="italic", color="#666")
-
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS5_prs_tm6.{ext}")
     fig.savefig(out, dpi=600, facecolor="white")

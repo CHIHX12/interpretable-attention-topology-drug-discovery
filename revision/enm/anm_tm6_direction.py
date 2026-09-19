@@ -192,6 +192,24 @@ print("\nSaved intermediate results to _anm_cache.npz")
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+# --- submission figure convention -------------------------------------------
+# Panels carry a letter only. All descriptive wording lives in the figure
+# legend of the Supplementary Information. Figures are drawn at the printed
+# double-column width so the type sizes here are the printed ones.
+import matplotlib as _mpl
+_mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
+                      "xtick.labelsize": 6.5, "ytick.labelsize": 7,
+                      "legend.fontsize": 7, "axes.linewidth": 0.7,
+                      "lines.linewidth": 1.0, "savefig.dpi": 1200})
+SI_WIDTH = 6.73
+
+
+def _panel(ax, letter):
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+            fontweight="bold", ha="left", va="bottom")
+# ----------------------------------------------------------------------------
+
 plt.rcParams.update({
     "font.family": "sans-serif", "font.sans-serif": ["Arial", "DejaVu Sans"],
     "axes.titlesize": 16, "axes.labelsize": 16,
@@ -210,7 +228,7 @@ def zone_color(r):
     if r <= 282: return "#7B1FA2"      # middle (pivot region)
     return "#C62828"                   # top
 
-fig, (axA, axB) = plt.subplots(2, 1, figsize=(16, 11))
+fig, (axA, axB, axC) = plt.subplots(3, 1, figsize=(SI_WIDTH, 6.4))
 fig.subplots_adjust(top=0.88, bottom=0.07, hspace=0.32, left=0.08, right=0.97)
 
 # Panel A: how far each TM6 residue moves
@@ -220,35 +238,32 @@ for rr in (272, 276):
         k = present.index(rr)
         axA.annotate(f"{id2node[rr]['name']}", (k, mag[k]), textcoords="offset points",
                      xytext=(0, 6), ha="center", fontsize=11, fontweight="bold", color="#7B1FA2")
-axA.set_title("(A)  How far each TM6 residue moves on activation (6KO5→8JSR, crystals)",
-              loc="left", fontweight="bold", pad=8)
+_panel(axA, "a")
 axA.set_ylabel("Cα displacement |Δr| (Å)")
 axA.set_xticks(xs); axA.set_xticklabels(lbl, rotation=90)
 axA.spines[["top", "right"]].set_visible(False)
-axA.text(0.99, 0.95, "Bottom swings most; upper TM6 ≈ quiet pivot",
-         transform=axA.transAxes, ha="right", va="top", fontsize=12, style="italic", color="#555")
-
 # Panel B: direction (radial, + outward / - inward)
 axB.bar(xs, rad, color=["#C62828" if v > 0 else "#1F6FBF" for v in rad], edgecolor="#333", lw=0.4)
 axB.axhline(0, color="black", lw=1.0)
-axB.set_title("(B)  Direction of motion: + = outward (away from bundle axis), − = inward",
-              loc="left", fontweight="bold", pad=8)
+_panel(axB, "b")
 axB.set_ylabel("Radial motion (Å)")
 axB.set_xlabel("TM6 residue number")
 axB.set_xticks(xs); axB.set_xticklabels(lbl, rotation=90)
 axB.spines[["top", "right"]].set_visible(False)
-axB.text(0.99, 0.95, "Cytoplasmic (bottom) end moves OUTWARD → classic TM6 activation swing",
-         transform=axB.transAxes, ha="right", va="top", fontsize=12, style="italic", color="#555")
-
-fig.text(0.012, 0.985, "Figure S2", fontsize=20, fontweight="bold", va="top")
-fig.text(0.012, 0.945,
-         "ANM + crystals: TM6 activation motion (direction), and how well the resting "
-         "structure's intrinsic modes predict it", fontsize=14, fontweight="bold", va="top")
-fig.text(0.012, 0.915,
-         f"Crystal transition (6KO5→8JSR superposed, RMSD 2.3 Å). Resting-state ANM soft "
-         f"modes capture {cum[9]:.0%} of this direction (first 10 modes). "
-         f"Note: a single ANM mode is sign-ambiguous; direction comes from the crystals.",
-         fontsize=11, style="italic", va="top", color="#666")
+# Panel C: how much of the crystal transition the soft modes already span
+axC.plot(range(1, len(cum) + 1), cum, "o-", ms=3, color="#1F6FBF")
+for k, style in ((10, "--"), (20, ":")):
+    if len(cum) >= k:
+        axC.axvline(k, color="#999", lw=0.7, ls=style)
+        axC.annotate(f"{cum[k-1]:.2f} at {k} modes", (k, cum[k-1]),
+                     textcoords="offset points", xytext=(5, -9), fontsize=7)
+axC.set_xlabel("number of low-frequency ANM modes")
+axC.set_ylabel("cumulative overlap\nwith the activation transition")
+axC.set_ylim(0, 1)
+axC.set_xlim(0, min(40, len(cum)))
+axC.spines[["top", "right"]].set_visible(False)
+_panel(axC, "c")
+fig.align_ylabels([axA, axB, axC])
 
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS2_anm_tm6_direction.{ext}")

@@ -116,7 +116,7 @@ def figure_s6():
                  label="Glu124–Arg283 spring removed")
     axes[1].set_ylabel("peak displacement\nafter a strike at Glu124")
     axes[1].set_yscale("log")
-    axes[1].legend(frameon=False, loc="lower right", bbox_to_anchor=(1.0, 0.02))
+    axes[1].legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.02), ncol=2)
     axes[2].bar(tm6, pct, color=[RED if p < -50 else ORANGE if p < -20 else GREY for p in pct],
                 edgecolor="black", linewidth=0.3)
     axes[2].set_ylabel("change (%)")
@@ -149,7 +149,7 @@ def figure_s7():
                 ("descriptors withheld, padding excluded, max over real atoms",
                  ATT / "featoff_epoch36.npz", "masked_max")]
     fig, axes = plt.subplots(4, 1, figsize=(WIDTH, 7.2), sharex=True)
-    for ax, letter, (label, path, key) in zip(axes, "abcd", variants):
+    for ax, letter, (_label, path, key) in zip(axes, "abcd", variants):
         d = delta(path, key)
         ax.axhline(0, color="black", lw=0.6)
         ax.bar(resn, d, width=1.0,
@@ -161,7 +161,6 @@ def figure_s7():
                             textcoords="offset points",
                             xytext=(0, 3 if d[i] > 0 else -9),
                             ha="center", fontsize=5.2, color="#333333")
-        ax.set_title(label, loc="left", fontsize=7.5)
         ax.set_ylabel(r"$\Delta$")
         panel(ax, letter)
     axes[-1].set_xlabel("GHSR residue number")
@@ -251,7 +250,7 @@ def figure_s9(n_perm=1000, seed=0):
     axes[0].axvline(obs[0], color=RED, lw=0.9, label="observed, one line per seed")
     axes[0].set_xlabel("median distance to the ligand in 8JSR of\nthe ten strongest residues (Å)")
     axes[0].set_ylabel("count")
-    axes[0].legend(frameon=False, loc="upper right")
+    axes[0].legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=1)
     panel(axes[0], "a")
 
     axes[1].bar(range(len(seeds)), pvals, color=[RED if p < 0.05 else GREY for p in pvals],
@@ -293,7 +292,7 @@ def figure_s10():
     axes[0].set_xlabel("nearest-neighbour ECFP4 Tanimoto\nto the training set")
     axes[0].set_ylabel("cumulative fraction of test ligands")
     axes[0].set_xlim(0, 1); axes[0].set_ylim(0, 1)
-    axes[0].legend(frameon=False, loc="upper left")
+    axes[0].legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.28), ncol=2)
     panel(axes[0], "a")
     axes[1].set_xlabel("nearest-neighbour ECFP4 Tanimoto\nto the training set")
     axes[1].set_ylabel("number of test ligands")

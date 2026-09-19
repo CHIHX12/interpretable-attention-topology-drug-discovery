@@ -16,6 +16,24 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
+# --- submission figure convention -------------------------------------------
+# Panels carry a letter only. All descriptive wording lives in the figure
+# legend of the Supplementary Information. Figures are drawn at the printed
+# double-column width so the type sizes here are the printed ones.
+import matplotlib as _mpl
+_mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
+                      "xtick.labelsize": 6.5, "ytick.labelsize": 7,
+                      "legend.fontsize": 7, "axes.linewidth": 0.7,
+                      "lines.linewidth": 1.0, "savefig.dpi": 1200})
+SI_WIDTH = 6.73
+
+
+def _panel(ax, letter):
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+            fontweight="bold", ha="left", va="bottom")
+# ----------------------------------------------------------------------------
+
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATES = [("6ko5.pdb", "A", "Antagonist\n(6KO5)", "#9E9E9E"),
           ("8jsr.pdb", "R", "Agonist\n(8JSR)", "#2E9E5B"),
@@ -84,7 +102,7 @@ plt.rcParams.update({
     "xtick.labelsize": 12, "ytick.labelsize": 13, "legend.fontsize": 12,
     "mathtext.default": "regular",
 })
-fig, (axA, axB) = plt.subplots(1, 2, figsize=(17, 7.5))
+fig, (axA, axB) = plt.subplots(1, 2, figsize=(SI_WIDTH, 2.97))
 fig.subplots_adjust(top=0.93, bottom=0.22, wspace=0.22, left=0.07, right=0.98)
 
 # Panel A: PIF distances
@@ -102,8 +120,7 @@ axA.text(len(contacts) - 0.5, 4.05, "~4 Å van der Waals contact", color="red",
          fontsize=11, ha="right", va="bottom")
 axA.set_xticks(x); axA.set_xticklabels(contacts, fontsize=11)
 axA.set_ylabel("min heavy-atom distance (Å)")
-axA.set_title("(A)  PIF contacts — F272 engages P224 on activation", loc="left",
-              fontweight="bold")
+_panel(axA, "a")
 axA.set_ylim(0, 7.2)
 axA.spines[["top", "right"]].set_visible(False)
 
@@ -121,16 +138,15 @@ for i, lab in enumerate(labels):
 axB.axhline(0, color="black", lw=0.8)
 axB.set_xticks(xb); axB.set_xticklabels(angles)
 axB.set_ylabel("side-chain dihedral (°)")
-axB.set_title("(B)  Toggle rotamers — W276 & F272 χ2 flip on activation", loc="left",
-              fontweight="bold")
+_panel(axB, "b")
 axB.set_ylim(-200, 200)
 axB.spines[["top", "right"]].set_visible(False)
 
 # shared color key, one row, at the bottom
 handles = [mpatches.Patch(facecolor=colors[i], edgecolor="#333",
                           label=labels[i].replace("\n", " ")) for i in range(len(labels))]
-fig.legend(handles=handles, loc="lower center", ncol=3, frameon=True,
-           framealpha=0.95, edgecolor="#ccc", fontsize=13, bbox_to_anchor=(0.5, 0.02))
+fig.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, -0.02),
+           ncol=2, frameon=False)
 
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS3_pif_cwxp_compare.{ext}")

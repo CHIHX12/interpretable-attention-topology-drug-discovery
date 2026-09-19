@@ -24,6 +24,24 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
+# --- submission figure convention -------------------------------------------
+# Panels carry a letter only. All descriptive wording lives in the figure
+# legend of the Supplementary Information. Figures are drawn at the printed
+# double-column width so the type sizes here are the printed ones.
+import matplotlib as _mpl
+_mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
+                      "xtick.labelsize": 6.5, "ytick.labelsize": 7,
+                      "legend.fontsize": 7, "axes.linewidth": 0.7,
+                      "lines.linewidth": 1.0, "savefig.dpi": 1200})
+SI_WIDTH = 6.73
+
+
+def _panel(ax, letter):
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+            fontweight="bold", ha="left", va="bottom")
+# ----------------------------------------------------------------------------
+
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(SCRIPT_DIR, "_data_compact.json")) as f:
     data = json.load(f)
@@ -86,7 +104,7 @@ plt.rcParams.update({
 labels = [f"{name[r]}\n" + {276: "W6.48*", 272: "F6.44", 224: "P5.50", 131: "I3.40",
           278: "P6.50", 283: "R283", 262: "V262"}[r] for r in cascade]
 xa = np.arange(len(cascade)); w = 0.38
-fig, ax = plt.subplots(figsize=(14, 7.5))
+fig, ax = plt.subplots(figsize=(SI_WIDTH, 3.61))
 fig.subplots_adjust(top=0.90, bottom=0.20, left=0.09, right=0.97)
 ax.bar(xa - w / 2, [peak_anta[idx[r]] for r in cascade], w, color="#9E9E9E",
        edgecolor="#333", lw=0.5, label="Antagonist network (no F272–P224)")
@@ -95,14 +113,9 @@ ax.bar(xa + w / 2, [peak_act[idx[r]] for r in cascade], w, color="#2E9E5B",
 ax.set_yscale("log")
 ax.set_xticks(xa); ax.set_xticklabels(labels)
 ax.set_ylabel("peak displacement when W276 is struck (log)")
-ax.set_title("(A)  Strike W276 (CWxP toggle): does forming F272–P224 open a route to P5.50?",
-             loc="left", fontweight="bold")
-ax.legend(loc="upper right", framealpha=0.95, edgecolor="#ccc")
+_panel(ax, "a")
+ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2, frameon=False)
 ax.spines[["top", "right"]].set_visible(False)
-ax.text(0.5, -0.16, "Grey = resting 6KO5 network. Green = same network + the active-state "
-        "F272–P224 spring. Scalar ENM = mechanical coupling, not real force.",
-        transform=ax.transAxes, ha="center", fontsize=11, style="italic", color="#666")
-
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS4_w276_strike_pif.{ext}")
     fig.savefig(out, dpi=600, facecolor="white")
