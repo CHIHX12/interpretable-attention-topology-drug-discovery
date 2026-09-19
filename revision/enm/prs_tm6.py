@@ -34,11 +34,11 @@ _mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
                       "xtick.labelsize": 6.5, "ytick.labelsize": 7,
                       "legend.fontsize": 7, "axes.linewidth": 0.7,
                       "lines.linewidth": 1.0, "savefig.dpi": 1200})
-SI_WIDTH = 6.73
+SI_WIDTH = 6.73  # sizes scaled to this width
 
 
 def _panel(ax, letter):
-    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=5.5,
             fontweight="bold", ha="left", va="bottom")
 # ----------------------------------------------------------------------------
 
@@ -123,25 +123,25 @@ radvals = radvals / scale
 # ---- figure ----
 plt.rcParams.update({
     "font.family": "sans-serif", "font.sans-serif": ["Arial", "DejaVu Sans"],
-    "axes.titlesize": 16, "axes.labelsize": 15,
-    "xtick.labelsize": 11, "ytick.labelsize": 13,
+    "axes.titlesize": 8, "axes.labelsize": 8,
+    "xtick.labelsize": 6.5, "ytick.labelsize": 6.5, "legend.fontsize": 7,
+    "mathtext.default": "regular",
 })
 fig, ax = plt.subplots(figsize=(SI_WIDTH, 3.14))
-fig.subplots_adjust(top=0.86, bottom=0.16, left=0.08, right=0.97)
+fig.set_layout_engine("constrained")
 xa = np.arange(len(TM6))
 ax.bar(xa, radvals, color=["#C62828" if v > 0 else "#1F6FBF" for v in radvals],
        edgecolor="#333", lw=0.4)
-ax.axhline(0, color="black", lw=1.0)
+ax.axhline(0, color="black", lw=0.45)
 for rr, lbl in [(272, "F272 (push)"), (276, "W276"), (283, "R283")]:
     k = TM6.index(rr)
     ax.annotate(lbl, (k, radvals[k]), textcoords="offset points", xytext=(0, 8 if radvals[k] >= 0 else -14),
-                ha="center", fontsize=10, fontweight="bold")
+                ha="center", fontsize=5.5, fontweight="bold")
 ax.set_xticks(xa); ax.set_xticklabels([str(r) for r in TM6], rotation=90)
 ax.set_ylabel("TM6 radial response (normalized)\n+ outward / − inward")
 ax.set_xlabel("TM6 residue number")
-_panel(ax, "a")
 ax.spines[["top", "right"]].set_visible(False)
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS5_prs_tm6.{ext}")
-    fig.savefig(out, dpi=600, facecolor="white")
+    fig.savefig(out, dpi=1200, facecolor="white")
     print("saved", out)

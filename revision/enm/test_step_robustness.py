@@ -25,11 +25,11 @@ _mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
                       "xtick.labelsize": 6.5, "ytick.labelsize": 7,
                       "legend.fontsize": 7, "axes.linewidth": 0.7,
                       "lines.linewidth": 1.0, "savefig.dpi": 1200})
-SI_WIDTH = 6.73
+SI_WIDTH = 6.73  # sizes scaled to this width
 
 
 def _panel(ax, letter):
-    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=5.5,
             fontweight="bold", ha="left", va="bottom")
 # ----------------------------------------------------------------------------
 
@@ -97,21 +97,22 @@ for h in ACTIVE + INACTIVE:
 # ── Figure ──────────────────────────────────────────────────────────────────
 plt.rcParams.update({
     "font.family": "sans-serif", "font.sans-serif": ["Arial", "DejaVu Sans"],
-    "axes.titlesize": 16, "axes.labelsize": 16,
-    "xtick.labelsize": 13, "ytick.labelsize": 13, "legend.fontsize": 12,
+    "axes.titlesize": 8, "axes.labelsize": 8,
+    "xtick.labelsize": 6.5, "ytick.labelsize": 6.5, "legend.fontsize": 7,
     "mathtext.default": "regular",
 })
 fig, (axA, axB) = plt.subplots(1, 2, figsize=(SI_WIDTH, 2.97), constrained_layout=True)
 
+fig.set_layout_engine("constrained")
 # Panel A: Spearman rho vs step count
 xs = list(CHECKPOINTS)
-axA.plot(xs, [rho[s] for s in xs], "o-", color="#1A9E8F", lw=2.4, ms=11,
+axA.plot(xs, [rho[s] for s in xs], "o-", color="#1A9E8F", lw=0.95, ms=4.4,
          markeredgecolor="white", markeredgewidth=1.2)
 for s in xs:
     axA.annotate(f"{rho[s]:.3f}", (s, rho[s]), textcoords="offset points",
-                 xytext=(0, 12), ha="center", fontsize=12, fontweight="bold")
-axA.axvline(REF, color="#888", ls="--", lw=1.4)
-axA.text(REF, axA.get_ylim()[0], " reference (300)", color="#666", fontsize=11,
+                 xytext=(0, 12), ha="center", fontsize=5.5, fontweight="bold")
+axA.axvline(REF, color="#888", ls="--", lw=0.55)
+axA.text(REF, axA.get_ylim()[0], " reference (300)", color="#666", fontsize=5.5,
          va="bottom", ha="left")
 axA.set_xscale("log")
 axA.set_xticks(xs); axA.set_xticklabels([str(s) for s in xs])
@@ -123,28 +124,28 @@ axA.grid(alpha=0.3)
 axA.spines[["top", "right"]].set_visible(False)
 
 # Panel B: each hub's R across step counts (labels spread to avoid overlap)
-def spread_labels(ax, pairs, x_end, x_lab, color, gap=0.17):
+def spread_labels(ax, pairs, x_end, x_lab, color, gap=0.42):
     pairs = sorted(pairs, key=lambda t: t[0])      # (log10 y, name)
     placed = []
     for ly, _ in pairs:
         placed.append(ly if not placed else max(ly, placed[-1] + gap))
     for (ly, name), yp in zip(pairs, placed):
         ax.annotate(name, xy=(x_end, 10 ** ly), xytext=(x_lab, 10 ** yp),
-                    fontsize=11, color=color, va="center", ha="left", fontweight="bold",
-                    arrowprops=dict(arrowstyle="-", color=color, lw=0.6, alpha=0.5))
+                    fontsize=5.5, color=color, va="center", ha="left", fontweight="bold",
+                    arrowprops=dict(arrowstyle="-", color=color, lw=0.4, alpha=0.5))
 
 for h in ACTIVE:
-    axB.plot(xs, [Rcp[s][idx[h]] for s in xs], "o-", color="#E8731C", lw=2, ms=8, alpha=0.9)
+    axB.plot(xs, [Rcp[s][idx[h]] for s in xs], "o-", color="#E8731C", lw=0.79, ms=3.2, alpha=0.9)
 for h in INACTIVE:
-    axB.plot(xs, [max(Rcp[s][idx[h]], 1e-4) for s in xs], "s-", color="#1F6FBF", lw=2, ms=7, alpha=0.9)
+    axB.plot(xs, [max(Rcp[s][idx[h]], 1e-4) for s in xs], "s-", color="#1F6FBF", lw=0.79, ms=2.8, alpha=0.9)
 x_end = xs[-1]; x_lab = x_end * 1.35
 spread_labels(axB, [(np.log10(Rcp[x_end][idx[h]]), id2name[h]) for h in ACTIVE],
               x_end, x_lab, "#E8731C")
 spread_labels(axB, [(np.log10(max(Rcp[x_end][idx[h]], 1e-4)), id2name[h]) for h in INACTIVE],
               x_end, x_lab, "#1F6FBF")
 axB.set_xlim(xs[0] * 0.85, x_end * 2.4)
-axB.axhline(1.0, color="black", ls="--", lw=1.4)
-axB.text(xs[0], 1.15, "R = 1 (crossover)", fontsize=11, va="bottom")
+axB.axhline(1.0, color="black", ls="--", lw=0.55)
+axB.text(xs[0], 1.15, "R = 1 (crossover)", fontsize=5.5, va="bottom")
 axB.set_xscale("log"); axB.set_yscale("log")
 axB.set_xticks(xs); axB.set_xticklabels([str(s) for s in xs])
 axB.set_xlabel("Integration steps")
@@ -153,10 +154,10 @@ _panel(axB, "b")
 axB.grid(alpha=0.3, which="both")
 axB.spines[["top", "right"]].set_visible(False)
 axB.legend(handles=[
-    plt.Line2D([0], [0], color="#C62828", marker="o", lw=1.2, label="Active hub"),
-    plt.Line2D([0], [0], color="#1F6FBF", marker="s", lw=1.2, label="Inactive hub"),
+    plt.Line2D([0], [0], color="#E8731C", marker="o", lw=0.8, label="Active hub"),
+    plt.Line2D([0], [0], color="#1F6FBF", marker="s", lw=0.8, label="Inactive hub"),
 ], loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2, frameon=False)
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS1_enm_step_robustness.{ext}")
-    fig.savefig(out, dpi=600, facecolor="white")
+    fig.savefig(out, dpi=1200, facecolor="white")
     print(f"saved {out}")

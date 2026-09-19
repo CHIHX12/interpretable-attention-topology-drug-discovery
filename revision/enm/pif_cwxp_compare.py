@@ -4,7 +4,7 @@ pif_cwxp_compare.py — CWxP toggle + PIF connector across 3 GHSR states,
 baseline = Antagonist (6KO5).  Agonist (8JSR) and Inverse (7F83) compared to it.
 
 Two measurements, both from the crystals (reproducible):
-  (A) PIF contact distances  : F272–P224 (F6.44–P5.50), F272–V131, F272–F221
+  (a) PIF contact distances  : F272–P224 (F6.44–P5.50) and F272–V131 (F6.44–I3.40)
   (B) Toggle rotamers (χ)    : W276 (χ1,χ2), F272 (χ1,χ2)
 
 Output: FigS3_pif_cwxp_compare.{png,pdf}
@@ -25,11 +25,11 @@ _mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
                       "xtick.labelsize": 6.5, "ytick.labelsize": 7,
                       "legend.fontsize": 7, "axes.linewidth": 0.7,
                       "lines.linewidth": 1.0, "savefig.dpi": 1200})
-SI_WIDTH = 6.73
+SI_WIDTH = 6.73  # sizes scaled to this width
 
 
 def _panel(ax, letter):
-    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=5.5,
             fontweight="bold", ha="left", va="bottom")
 # ----------------------------------------------------------------------------
 
@@ -98,27 +98,26 @@ for pdb, ch, lab, col in STATES:
 # ---- figure ----
 plt.rcParams.update({
     "font.family": "sans-serif", "font.sans-serif": ["Arial", "DejaVu Sans"],
-    "axes.titlesize": 16, "axes.labelsize": 15,
-    "xtick.labelsize": 12, "ytick.labelsize": 13, "legend.fontsize": 12,
+    "axes.titlesize": 8, "axes.labelsize": 8,
+    "xtick.labelsize": 6.5, "ytick.labelsize": 6.5, "legend.fontsize": 7,
     "mathtext.default": "regular",
 })
 fig, (axA, axB) = plt.subplots(1, 2, figsize=(SI_WIDTH, 2.97))
-fig.subplots_adjust(top=0.93, bottom=0.22, wspace=0.22, left=0.07, right=0.98)
-
+fig.set_layout_engine("constrained")
 # Panel A: PIF distances
 contacts = list(dist[labels[0]].keys())
 x = np.arange(len(contacts)); w = 0.26
 for i, lab in enumerate(labels):
     vals = [dist[lab][c] for c in contacts]
     bars = axA.bar(x + (i - 1) * w, vals, w, color=colors[i],
-                   edgecolor="#333", lw=0.5, label=lab.replace("\n", " "))
+                   edgecolor="#333", lw=0.4, label=lab.replace("\n", " "))
     for b, v in zip(bars, vals):
         axA.text(b.get_x() + b.get_width() / 2, v + 0.08, f"{v:.1f}",
-                 ha="center", va="bottom", fontsize=10, fontweight="bold")
-axA.axhline(4.0, color="red", ls="--", lw=1.3)
+                 ha="center", va="bottom", fontsize=5.5, fontweight="bold")
+axA.axhline(4.0, color="red", ls="--", lw=0.51)
 axA.text(len(contacts) - 0.5, 4.05, "~4 Å van der Waals contact", color="red",
-         fontsize=11, ha="right", va="bottom")
-axA.set_xticks(x); axA.set_xticklabels(contacts, fontsize=11)
+         fontsize=5.5, ha="right", va="bottom")
+axA.set_xticks(x); axA.set_xticklabels(contacts, fontsize=5.5)
 axA.set_ylabel("min heavy-atom distance (Å)")
 _panel(axA, "a")
 axA.set_ylim(0, 7.2)
@@ -130,12 +129,12 @@ xb = np.arange(len(angles))
 for i, lab in enumerate(labels):
     vals = [rot[lab][a] for a in angles]
     bars = axB.bar(xb + (i - 1) * w, vals, w, color=colors[i],
-                   edgecolor="#333", lw=0.5, label=lab.replace("\n", " "))
+                   edgecolor="#333", lw=0.4, label=lab.replace("\n", " "))
     for b, v in zip(bars, vals):
         axB.text(b.get_x() + b.get_width() / 2, v + (4 if v >= 0 else -4),
                  f"{v:.0f}", ha="center", va="bottom" if v >= 0 else "top",
-                 fontsize=10, fontweight="bold")
-axB.axhline(0, color="black", lw=0.8)
+                 fontsize=5.5, fontweight="bold")
+axB.axhline(0, color="black", lw=0.4)
 axB.set_xticks(xb); axB.set_xticklabels(angles)
 axB.set_ylabel("side-chain dihedral (°)")
 _panel(axB, "b")
@@ -145,12 +144,11 @@ axB.spines[["top", "right"]].set_visible(False)
 # shared color key, one row, at the bottom
 handles = [mpatches.Patch(facecolor=colors[i], edgecolor="#333",
                           label=labels[i].replace("\n", " ")) for i in range(len(labels))]
-fig.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, -0.02),
-           ncol=2, frameon=False)
+fig.legend(handles=handles, loc="outside lower center", ncol=3, frameon=False)
 
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS3_pif_cwxp_compare.{ext}")
-    fig.savefig(out, dpi=600, facecolor="white")
+    fig.savefig(out, dpi=1200, facecolor="white")
     print("saved", out)
 
 # also print the table

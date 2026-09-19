@@ -155,12 +155,18 @@ def figure_s7():
         ax.bar(resn, d, width=1.0,
                color=[RED if v > 0 else BLUE for v in d], linewidth=0)
         order = np.argsort(-d)
-        for i in list(order[:10]) + list(order[-10:]):
-            if abs(d[i]) > 1e-6:
-                ax.annotate(f"{seq[resn[i]-OFFSET]}{resn[i]}", (resn[i], d[i]),
-                            textcoords="offset points",
-                            xytext=(0, 3 if d[i] > 0 else -9),
-                            ha="center", fontsize=5.2, color="#333333")
+        # label the strongest positions, but only one per run of neighbours,
+        # otherwise a cluster of consecutive residues prints on top of itself
+        picked = []
+        for i in list(order[:5]) + list(order[-5:]):
+            if abs(d[i]) > 1e-6 and all(abs(resn[i] - resn[j]) > 6 for j in picked):
+                picked.append(i)
+        for i in picked:
+            ax.annotate(f"{seq[resn[i]-OFFSET]}{resn[i]}", (resn[i], d[i]),
+                        textcoords="offset points",
+                        xytext=(0, 4 if d[i] > 0 else -10),
+                        ha="center", fontsize=5.4, color="#333333")
+        ax.margins(y=0.22)
         ax.set_ylabel(r"$\Delta$")
         panel(ax, letter)
     axes[-1].set_xlabel("GHSR residue number")
@@ -241,7 +247,7 @@ def figure_s9(n_perm=1000, seed=0):
         null = medians(A, L)
         obs.append(o); nulls.append(null); pvals.append(float((null <= o).mean()))
 
-    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 2.9))
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 2.9), layout="constrained")
     seeds = [int(f.stem.split("seed")[-1]) for f in files]
     axes[0].hist(np.concatenate(nulls), bins=40, color=GREY, edgecolor="black",
                  linewidth=0.3, label=f"{n_perm} relabellings x {len(files)} seeds")
@@ -250,7 +256,6 @@ def figure_s9(n_perm=1000, seed=0):
     axes[0].axvline(obs[0], color=RED, lw=0.9, label="observed, one line per seed")
     axes[0].set_xlabel("median distance to the ligand in 8JSR of\nthe ten strongest residues (Å)")
     axes[0].set_ylabel("count")
-    axes[0].legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=1)
     panel(axes[0], "a")
 
     axes[1].bar(range(len(seeds)), pvals, color=[RED if p < 0.05 else GREY for p in pvals],
@@ -262,6 +267,8 @@ def figure_s9(n_perm=1000, seed=0):
     axes[1].set_xlabel("fine-tuning seed")
     axes[1].set_ylabel("permutation P")
     panel(axes[1], "b")
+    fig.legend(*axes[0].get_legend_handles_labels(),
+               loc="outside lower center", ncol=2, frameon=False)
     save(fig, "FigS9_label_permutation")
     n_sig = sum(p < 0.05 for p in pvals)
     print(f"     observed {np.mean(obs):.2f} Å, null median {np.median(np.concatenate(nulls)):.2f} Å")
@@ -280,7 +287,7 @@ def figure_s10():
     curves = [("record-level (deposited)", "datasets/GPCR_resarch/random", "#AEB6BF"),
               ("compound-disjoint", "datasets/GPCR_resarch/rev22_compound_s0", "#5DADE2"),
               ("scaffold-disjoint", "datasets/GPCR_resarch/rev22_scaffold_s0", "#1F618D")]
-    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 2.8))
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 2.8), layout="constrained")
     for label, folder, colour in curves:
         tr = pd.read_csv(f"{folder}/train.csv"); te = pd.read_csv(f"{folder}/test.csv")
         tr_fp = [fp(s) for s in tr.SMILES.unique()]
@@ -292,12 +299,13 @@ def figure_s10():
     axes[0].set_xlabel("nearest-neighbour ECFP4 Tanimoto\nto the training set")
     axes[0].set_ylabel("cumulative fraction of test ligands")
     axes[0].set_xlim(0, 1); axes[0].set_ylim(0, 1)
-    axes[0].legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.28), ncol=2)
     panel(axes[0], "a")
     axes[1].set_xlabel("nearest-neighbour ECFP4 Tanimoto\nto the training set")
     axes[1].set_ylabel("number of test ligands")
     axes[1].set_xlim(0, 1)
     panel(axes[1], "b")
+    fig.legend(*axes[0].get_legend_handles_labels(),
+               loc="outside lower center", ncol=2, frameon=False)
     save(fig, "FigS10_partition_characteristics")
 
 

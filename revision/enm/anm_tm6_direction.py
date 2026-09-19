@@ -202,18 +202,18 @@ _mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
                       "xtick.labelsize": 6.5, "ytick.labelsize": 7,
                       "legend.fontsize": 7, "axes.linewidth": 0.7,
                       "lines.linewidth": 1.0, "savefig.dpi": 1200})
-SI_WIDTH = 6.73
+SI_WIDTH = 6.73  # sizes scaled to this width
 
 
 def _panel(ax, letter):
-    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=5.5,
             fontweight="bold", ha="left", va="bottom")
 # ----------------------------------------------------------------------------
 
 plt.rcParams.update({
     "font.family": "sans-serif", "font.sans-serif": ["Arial", "DejaVu Sans"],
-    "axes.titlesize": 16, "axes.labelsize": 16,
-    "xtick.labelsize": 12, "ytick.labelsize": 13, "legend.fontsize": 12,
+    "axes.titlesize": 8, "axes.labelsize": 8,
+    "xtick.labelsize": 6.5, "ytick.labelsize": 6.5, "legend.fontsize": 7,
     "mathtext.default": "regular",
 })
 
@@ -229,43 +229,43 @@ def zone_color(r):
     return "#C62828"                   # top
 
 fig, (axA, axB, axC) = plt.subplots(3, 1, figsize=(SI_WIDTH, 6.4))
-fig.subplots_adjust(top=0.88, bottom=0.07, hspace=0.32, left=0.08, right=0.97)
-
+fig.set_layout_engine("constrained")
 # Panel A: how far each TM6 residue moves
 axA.bar(xs, mag, color=[zone_color(r) for r in present], edgecolor="#333", lw=0.4)
 for rr in (272, 276):
     if rr in present:
         k = present.index(rr)
         axA.annotate(f"{id2node[rr]['name']}", (k, mag[k]), textcoords="offset points",
-                     xytext=(0, 6), ha="center", fontsize=11, fontweight="bold", color="#7B1FA2")
+                     xytext=(0, 6), ha="center", fontsize=5.5, fontweight="bold", color="#7B1FA2")
 _panel(axA, "a")
 axA.set_ylabel("Cα displacement |Δr| (Å)")
 axA.set_xticks(xs); axA.set_xticklabels(lbl, rotation=90)
 axA.spines[["top", "right"]].set_visible(False)
 # Panel B: direction (radial, + outward / - inward)
 axB.bar(xs, rad, color=["#C62828" if v > 0 else "#1F6FBF" for v in rad], edgecolor="#333", lw=0.4)
-axB.axhline(0, color="black", lw=1.0)
+axB.axhline(0, color="black", lw=0.42)
 _panel(axB, "b")
 axB.set_ylabel("Radial motion (Å)")
 axB.set_xlabel("TM6 residue number")
 axB.set_xticks(xs); axB.set_xticklabels(lbl, rotation=90)
 axB.spines[["top", "right"]].set_visible(False)
 # Panel C: how much of the crystal transition the soft modes already span
-axC.plot(range(1, len(cum) + 1), cum, "o-", ms=3, color="#1F6FBF")
+axC.plot(range(1, len(cum) + 1), cum, "o-", ms=2.5, color="#1F6FBF")
 for k, style in ((10, "--"), (20, ":")):
     if len(cum) >= k:
-        axC.axvline(k, color="#999", lw=0.7, ls=style)
+        axC.axvline(k, color="#999", lw=0.4, ls=style)
         axC.annotate(f"{cum[k-1]:.2f} at {k} modes", (k, cum[k-1]),
-                     textcoords="offset points", xytext=(5, -9), fontsize=7)
+                     textcoords="offset points", xytext=(-4, -11), ha="right", fontsize=5.5)
 axC.set_xlabel("number of low-frequency ANM modes")
 axC.set_ylabel("cumulative overlap\nwith the activation transition")
 axC.set_ylim(0, 1)
-axC.set_xlim(0, min(40, len(cum)))
+axC.set_xlim(0.5, min(21, len(cum) + 1))
+axC.set_xticks(range(0, min(21, len(cum) + 1), 5))
 axC.spines[["top", "right"]].set_visible(False)
 _panel(axC, "c")
 fig.align_ylabels([axA, axB, axC])
 
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS2_anm_tm6_direction.{ext}")
-    fig.savefig(out, dpi=600, facecolor="white")
+    fig.savefig(out, dpi=1200, facecolor="white")
     print(f"saved {out}")

@@ -33,11 +33,11 @@ _mpl.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
                       "xtick.labelsize": 6.5, "ytick.labelsize": 7,
                       "legend.fontsize": 7, "axes.linewidth": 0.7,
                       "lines.linewidth": 1.0, "savefig.dpi": 1200})
-SI_WIDTH = 6.73
+SI_WIDTH = 6.73  # sizes scaled to this width
 
 
 def _panel(ax, letter):
-    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=9,
+    ax.text(-0.09, 1.03, f"({letter})", transform=ax.transAxes, fontsize=5.5,
             fontweight="bold", ha="left", va="bottom")
 # ----------------------------------------------------------------------------
 
@@ -98,25 +98,25 @@ for r in cascade:
 # ---- figure ----
 plt.rcParams.update({
     "font.family": "sans-serif", "font.sans-serif": ["Arial", "DejaVu Sans"],
-    "axes.titlesize": 16, "axes.labelsize": 15,
-    "xtick.labelsize": 12, "ytick.labelsize": 13, "legend.fontsize": 12,
+    "axes.titlesize": 8, "axes.labelsize": 8,
+    "xtick.labelsize": 6.5, "ytick.labelsize": 6.5, "legend.fontsize": 7,
+    "mathtext.default": "regular",
 })
 labels = [f"{name[r]}\n" + {276: "W6.48*", 272: "F6.44", 224: "P5.50", 131: "I3.40",
           278: "P6.50", 283: "R283", 262: "V262"}[r] for r in cascade]
 xa = np.arange(len(cascade)); w = 0.38
 fig, ax = plt.subplots(figsize=(SI_WIDTH, 3.61))
-fig.subplots_adjust(top=0.90, bottom=0.20, left=0.09, right=0.97)
+fig.set_layout_engine("constrained")
 ax.bar(xa - w / 2, [peak_anta[idx[r]] for r in cascade], w, color="#9E9E9E",
-       edgecolor="#333", lw=0.5, label="Antagonist network (no F272–P224)")
+       edgecolor="#333", lw=0.4, label="Antagonist network (no F272–P224)")
 ax.bar(xa + w / 2, [peak_act[idx[r]] for r in cascade], w, color="#2E9E5B",
-       edgecolor="#333", lw=0.5, label="+ F272–P224 contact (active-like)")
+       edgecolor="#333", lw=0.4, label="+ F272–P224 contact (active-like)")
 ax.set_yscale("log")
 ax.set_xticks(xa); ax.set_xticklabels(labels)
 ax.set_ylabel("peak displacement when W276 is struck (log)")
-_panel(ax, "a")
 ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2, frameon=False)
 ax.spines[["top", "right"]].set_visible(False)
 for ext in ("png", "pdf"):
     out = os.path.join(SCRIPT_DIR, f"FigS4_w276_strike_pif.{ext}")
-    fig.savefig(out, dpi=600, facecolor="white")
+    fig.savefig(out, dpi=1200, facecolor="white")
     print("saved", out)
